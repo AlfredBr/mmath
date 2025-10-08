@@ -1,0 +1,9 @@
+[project]
+name = "mmath"
+version = "0.1.0"
+description = "mental math practice"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numexpr>=2.13.1",
+]
