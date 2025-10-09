@@ -1,222 +1,167 @@
-import os
 import random
-import shutil
 import sys
 import time
-from math import ceil, floor, sqrt
 
-import numexpr
+from colorama import Fore
+
+from helpers import (
+    addition,
+    all_custom,
+    clear_cons,
+    division,
+    get_int,
+    multiplication,
+    plus_minus,
+    square,
+    squareroot,
+    subtraction,
+)
 
 
-def get_float(message: str) -> float:
+def get_maxes(message: str) -> int | bool:
     while True:
-        user_input = input(message)
+        user_input = input(message).lower().strip()
         if user_input == "q":
             sys.exit()
-        try:
-            num = float(user_input)
-            break
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
-    return num
-
-
-def get_int(message: str) -> int:
-    while True:
-        user_input = input(message)
-        if user_input == "q":
-            sys.exit()
+        elif user_input == "":
+            print("Skipping...")
+            return False
         try:
             num = int(user_input)
             break
         except ValueError:
-            print("Invalid input. Please enter a valid whole number.")
+            print(
+                Fore.RED
+                + "Invalid input. Please enter a valid whole number."
+                + Fore.RESET
+            )
     return num
 
 
-def get_expr(message: str) -> float:
-    while True:
-        user_input = input(message)
-        if user_input == "q":
-            sys.exit()
-        try:
-            num = numexpr.evaluate(user_input)
-            num = float(num)
-            break
-        except Exception:
-            print("Invalid input. Please enter a valid whole number.")
-    return num
+def configure_custom():
+    user_add = get_maxes("Enter a maximum number for addition, or Enter to skip: ")
+    user_sub = get_maxes("Enter a maximum number for subtraction, or Enter to skip: ")
+    user_mult = get_maxes(
+        "Enter a maximum number for multiplication, or Enter to skip: "
+    )
+    user_div = get_maxes("Enter a maximum number for division, or Enter to skip: ")
+    user_sq = get_maxes("Enter a maximum number to square, or Enter to skip: ")
+    user_sqrt = get_maxes("Enter a maximum number to square root, or Enter to skip: ")
 
+    options = {
+        "add": user_add,
+        "sub": user_sub,
+        "mult": user_mult,
+        "div": user_div,
+        "sq": user_sq,
+        "sqrt": user_sqrt,
+    }
 
-def clear_cons() -> None:
-    rows, columns = shutil.get_terminal_size()
-    os.system("/usr/bin/clear")  # noqa: S605
-    text = "Enter q to quit at any time  "
-    print(f"{text:>{rows}}")
-    print("\n")
-
-
-def addition(top: int) -> int:
-    num_wrong = 0
-    a = random.randint(1, top)
-    b = random.randint(1, top)
-    ans = get_int(f"{a} + {b} = ")
-    while int(ans) != (a + b):
-        print("--   wrong  --\n")
-        num_wrong += 1
-        ans = get_int(f"{a} + {b} = ")
-    # print("--  correct --\n")
-    return num_wrong
-
-
-def subtraction(top: int) -> int:
-    num_wrong = 0
-    a = random.randint(1, top)
-    b = random.randint(1, top)
-    ans = get_int(f"{a} - {b} = ")
-    while int(ans) != (a - b):
-        print("--   wrong  --\n")
-        num_wrong += 1
-        ans = get_int(f"{a} - {b} = ")
-    # print("--  correct --\n")
-    return num_wrong
-
-
-def plus_minus(top: int) -> int:
-    if random.random() < 0.5:
-        return addition(top)
-    return subtraction(top)
-
-
-def multiplication(top: int) -> int:
-    num_wrong = 0
-    a = random.randint(1, top)
-    b = random.randint(1, top)
-    ans = get_int(f"{a} * {b} = ")
-    while int(ans) != (a * b):
-        print("--   wrong  --\n")
-        num_wrong += 1
-        ans = get_int(f"{a} * {b} = ")
-    # print("-- correct --\n")
-    return num_wrong
-
-
-def division(top: int) -> int:
-    num_wrong = 0
-    dividend = random.randint(1, top)
-    divisor = random.randint(1, dividend)
-    print(f"{dividend} / {divisor} = ")
-    quotient = get_int("Quotient = ")
-    remainder = get_int("Remainder = ")
-    while (quotient, remainder) != divmod(dividend, divisor):
-        print("--   wrong   --\n")
-        num_wrong += 1
-        print(f"{dividend} / {divisor} = ")
-        quotient = get_int("Quotient = ")
-        remainder = get_int("Remainder = ")
-    # print("-- correct --\n")
-    return num_wrong
-
-
-def square(top: int) -> int:
-    num_wrong = 0
-    a = random.randint(1, top)
-    ans = get_int(f"{a}^2 = ")
-    while int(ans) != (a**2):
-        print("--   wrong  --\n")
-        num_wrong += 1
-        ans = get_int(f"{a}^2 = ")
-    # print("-- correct --\n")
-    return num_wrong
-
-
-def squareroot(top: int) -> int:
-    num_wrong = 0
-    a = random.randint(1, top)
-    true_root = sqrt(a)
-    rounded = round(true_root)
-    down = floor(true_root)
-    up = ceil(true_root)
-    best_answer = rounded - (rounded**2 - a) / (2 * rounded)
-    ans = get_expr(f"sqrt({a}) = ")
-    while abs(ans - best_answer) > 0.1:
-        print("--   wrong  --\n")
-        num_wrong += 1
-        ans = get_expr(f"sqrt({a}) = ")
-    print(f"Best answer: {best_answer}")
-    print(f"Actual: {true_root}")
-    print(f"Difference: {abs(best_answer - true_root)}")
-    q = input("Press enter to continue...\n")
-    if q == "q":
+    def custom() -> int:
+        top = False
+        operation = None
+        while not top:
+            operation, top = random.choice(list(options.items()))
+        if operation == "add":
+            return addition(user_add)
+        if operation == "sub":
+            return subtraction(user_sub)
+        if operation == "mult":
+            return multiplication(user_mult)
+        if operation == "div":
+            return division(user_div)
+        if operation == "sq":
+            return square(user_sq)
+        if operation == "sqrt":
+            return squareroot(user_sqrt)
+        print(Fore.RED + "Must select at least one operation." + Fore.RESET)
         sys.exit()
-    return num_wrong
+
+    return custom
 
 
-def everything(top: int) -> int:
-    num = random.randint(0, 5)
-    if num == 0:
-        return addition(top)
-    if num == 1:
-        return subtraction(top)
-    if num == 2:
-        return multiplication(top)
-    if num == 3:
-        return division(top)
-    if num == 4:
-        return square(top)
-    return squareroot(top)
-
-
-def main() -> None:
-    clear_cons()
-    operations = "+, -, (+/-), *, /, ^, sqrt, all"
-    print(f"What do you want to practice? ({operations})")
-    op = input("Operation: ")
-    if op == "q":
-        sys.exit()
-    while op not in ["+", "-", "(+/-)", "*", "/", "^", "sqrt", "all"]:
-        print(f"Invalid operation. Please enter a valid operation ({operations}).")
-        op = input("operation: ")
-    if op == "+":
-        trial = addition
-    elif op == "-":
-        trial = subtraction
-    elif op == "(+/-)":
-        trial = plus_minus
-    elif op == "*":
-        trial = multiplication
-    elif op == "/":
-        trial = division
-    elif op == "^":
-        trial = square
-    elif op == "sqrt":
-        trial = squareroot
-    elif op == "all":
-        trial = everything
-    else:
-        print("Encountered error picking operation. Exiting program...")
-        sys.exit()
-    print("What is the max number?")
-    top = get_int("Enter a number: ")
-    print("How many questions?")
-    num_q = get_int("Enter a number:")
+def play_round(trial, *args: int) -> None:
+    print(Fore.BLUE + "How many questions?" + Fore.RESET)
+    num_q = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
     errors = 0
     start = time.time()
     for i in range(num_q):
         clear_cons()
-        print(f"Question {i + 1}\n")
-        errors += trial(top)
+        print(Fore.BLUE + f"Question {i + 1}\n" + Fore.RESET)
+        errors += trial(*args)
     end = time.time()
     print(
-        f"Solved {num_q} problems in {round(end - start, 2)} seconds with {errors} error(s)."
+        Fore.BLUE + f"Solved {num_q} problems in {round(end - start, 2)} seconds "
+        f"with {errors} error(s)." + Fore.RESET
     )
-    print(f"Average time: {round((end - start) / num_q, 4)} seconds")
-    print("Again? (y/n)")
-    again = input()
-    if again == "y":
-        main()
-    else:
-        sys.exit()
+    print(
+        Fore.BLUE
+        + f"Average time: {round((end - start) / num_q, 4)} seconds"
+        + Fore.RESET
+    )
+
+
+def main() -> None:
+    while True:
+        clear_cons()
+        operations = ["+", "-", "(+/-)", "*", "/", "^", "sqrt", "custom", "default"]
+        operations_str = ", ".join(operations)
+        print(
+            Fore.BLUE + f"What do you want to practice? ({operations_str})" + Fore.RESET
+        )
+        op = input(Fore.GREEN + "Operation: " + Fore.RESET)
+        op = op.lower().strip()
+        if op == "q":
+            sys.exit()
+        while op not in operations:
+            print(
+                Fore.RED
+                + f"Invalid operation. Please enter a valid operation ({operations})."
+                + Fore.RESET
+            )
+            op = input(Fore.GREEN + "operation: " + Fore.RESET)
+            op = op.lower()
+            if op == "q":
+                sys.exit()
+        if op == "custom":
+            trial = configure_custom()
+            play_round(trial)
+        elif op == "default":
+            trial = all_custom(999, 999, 99, 999, 99, 999)
+            play_round(trial)
+        else:
+            if op == "+":
+                trial = addition
+            elif op == "-":
+                trial = subtraction
+            elif op == "(+/-)":
+                trial = plus_minus
+            elif op == "*":
+                trial = multiplication
+            elif op == "/":
+                trial = division
+            elif op == "^":
+                trial = square
+            else:
+                trial = squareroot
+            print(Fore.BLUE + "What is the max number?" + Fore.RESET)
+            top = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+            play_round(trial, top)
+        print(
+            Fore.BLUE
+            + "Again? ("
+            + Fore.GREEN
+            + "y"
+            + Fore.RESET
+            + "/"
+            + Fore.RED
+            + "n"
+            + Fore.RESET
+            + ")"
+        )
+        again = input()
+        if again == "n":
+            sys.exit()
 
 
 if __name__ == "__main__":
