@@ -127,7 +127,7 @@ def main() -> None:
             trial = configure_custom()
             play_round(trial)
         elif op == "default":
-            trial = all_custom(999, 999, 99, 999, 99, 999)
+            trial = all_custom(999, 999, 99, 999, 99, 99)
             play_round(trial)
         else:
             if op == "+":

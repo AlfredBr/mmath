@@ -2,7 +2,7 @@ import os
 import random
 import shutil
 import sys
-from math import sqrt
+from math import sqrt, floor
 
 import numexpr
 from colorama import Fore
@@ -121,7 +121,7 @@ def multiplication(top: int) -> int:
 def division(top: int) -> int:
     num_wrong = 0
     dividend = random.randint(1, top)
-    divisor = random.randint(1, dividend)
+    divisor = random.randint(1, floor(dividend/5))
     print(f"{dividend} / {divisor} = ")
     quotient = get_int("Quotient = ")
     remainder = get_int("Remainder = ")
