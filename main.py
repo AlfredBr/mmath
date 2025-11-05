@@ -1,55 +1,45 @@
 import random
-import os
-import sys
 import time
 
 from colorama import Fore
 
 from helpers import (
+    clear_cons,
+    get_int,
+    get_maxes,
+    quit_check,
+)
+from operations import (
     addition,
     all_custom,
-    clear_cons,
     division,
-    get_int,
     multiplication,
-    times_tables,
     plus_minus,
     square,
     squareroot,
     subtraction,
+    times_tables,
 )
 
 
-def get_maxes(message: str) -> int | bool:
-    while True:
-        user_input = input(message).lower().strip()
-        quit_app(user_input)
-        if user_input == "":
-            print("Skipping...")
-            return False
-        try:
-            num = int(user_input)
-            num = max(num, 1)
-            break
-        except ValueError:
-            print(
-                Fore.RED
-                + "Invalid input. Please enter a valid whole number."
-                + Fore.RESET
-            )
-    return num
-
-
 def configure_custom():
-    user_add = get_maxes("Enter a maximum number for addition, or Enter to skip: ")
-    user_sub = get_maxes("Enter a maximum number for subtraction, or Enter to skip: ")
-    user_mult = get_maxes(
-        "Enter a maximum number for multiplication, or Enter to skip: "
-    )
-    user_div = get_maxes("Enter a maximum number for division, or Enter to skip: ")
-    user_sq = get_maxes("Enter a maximum number to square, or Enter to skip: ")
-    user_sqrt = get_maxes("Enter a maximum number to square root, or Enter to skip: ")
-
+    while True:
+        user_add = get_maxes("Enter a maximum number for addition, or Enter to skip: ")
+        user_sub = get_maxes(
+            "Enter a maximum number for subtraction, or Enter to skip: "
+        )
+        user_mult = get_maxes(
+            "Enter a maximum number for multiplication, or Enter to skip: "
+        )
+        user_div = get_maxes("Enter a maximum number for division, or Enter to skip: ")
+        user_sq = get_maxes("Enter a maximum number to square, or Enter to skip: ")
+        user_sqrt = get_maxes(
+            "Enter a maximum number to square root, or Enter to skip: "
+        )
+        if not any([user_add, user_sub, user_mult, user_div, user_sq, user_sqrt]):
+            print(Fore.RED + "Error: please specify at least one maximum." + Fore.RESET)
+            continue
+        break
     options = {
         "add": user_add,
         "sub": user_sub,
@@ -76,8 +66,8 @@ def configure_custom():
             return square(user_sq)
         if operation == "sqrt":
             return squareroot(user_sqrt)
-        print(Fore.RED + "Must select at least one operation." + Fore.RESET)
-        sys.exit()
+        print(Fore.RED + "ERROR: SHOULD NEVER SEE THIS" + Fore.RESET)
+        raise SystemExit
 
     return custom
 
@@ -101,13 +91,7 @@ def play_round(trial, num_q: int, *args: int) -> None:
     )
 
 
-def quit_app(check: str) -> None:
-    if check.lower().strip() == "q":
-        os.system("clear")
-        sys.exit()
-
-
-def configure():
+def configure() -> tuple[str, int]:
     operations = [
         "+",
         "-",
@@ -125,7 +109,7 @@ def configure():
     print(Fore.BLUE + f"What do you want to practice? ({operations_str})" + Fore.RESET)
     op = input(Fore.GREEN + "Operation: " + Fore.RESET)
     op = op.lower().strip()
-    quit_app(op)
+    quit_check(op)
     while op not in operations:
         print(
             Fore.RED
@@ -134,7 +118,7 @@ def configure():
         )
         op = input(Fore.GREEN + "Operation: " + Fore.RESET)
         op = op.lower()
-        quit_app(op)
+        quit_check(op)
     print(Fore.BLUE + "How many questions?" + Fore.RESET)
     num_q = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
     return op, num_q
@@ -156,18 +140,18 @@ def again_msg() -> None:
     return None
 
 
-def main_loop(*args):
+def main_loop(*args) -> None:
     again = "y"
     while again == "y":
         play_round(*args)
         again_msg()
         again = input()
-        quit_app(again)
+        quit_check(again)
         while again.lower() not in {"y", "n", "q"}:
             print(Fore.RED + "Invalid input." + Fore.RESET)
             again_msg()
             again = input()
-            quit_app(again)
+            quit_check(again)
 
 
 def main() -> None:
@@ -210,4 +194,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n" + Fore.BLUE + "Program interrupted. Exiting..." + Fore.RESET)
