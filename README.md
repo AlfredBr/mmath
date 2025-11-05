@@ -24,34 +24,42 @@ pip install colorama numexpr
 
 # Usage
 When you start the program, you can follow the prompts to choose an operation. The
-options are +, -, (+/-), *, /, ^, sqrt, times tables, tt, custom, or default.
-You can enter 'q' at any prompt to exit the program.
+options are `+`, `-`, `(+/-)`, `*`, `/`, `^`, `sqrt`, `times tables`, `tt`, 
+`custom`, or `default`.
+You can enter `q` at any prompt to exit the program. After you complete the
+number of questions you specified, you will see how long it took you to
+complete, the average time it took to answer each question, and the number of
+mistakes.
 
 ## Addition, Subtraction, Multiplication
-'+', '-', '(+/-)', and '*' let you select a maximum number to compute and asks
+`+`, `-`, `(+/-)`, and `*` let you select a maximum number to compute and asks
 you a series of questions.
 
 ## Division
-'/' asks you to compute the dividend and remainder exactly.
+`/` asks you to compute the dividend and remainder exactly.
 
 ## Square
-'^' asks you to compute the square of a number exactly.
+`^` asks you to compute the square of a number exactly.
 
 ## Times Tables (tt)
-Times Tables (tt for short) asks you for what times table to practice, and a
-maximum to go to. For example, the "2" times table with a max of 10 will ask
+'times tables` (`tt` for short) asks you for what times table to practice, and a
+maximum number to go to. For example, the "2" times table with a max of 10 will ask
 for multiplication of 2 by any number 1-10.
 
 ## Square Root
 This asks you to compute the square root of a given number. It assumes you are
 using one iteration of Newton's method, using the closest perfect square as a
-first guess. You can input expressions like "8 + 5/12", and it accepts a range
-of solutions +- 1 as correct.
+first guess. 
+$$
+\sqrt{n} \approx x_0 - \frac{x_0^2-n}{2x_0}
+$$
+You can input expressions like "8 + 5/12", and it accepts a range
+of solutions +- 0.1 as correct.
 
 ## Custom
 This walks you through a prompt to select multiple operations. You can select
-an operation by giving a maximum number that you want to compute, or skip by
-pressing Enter.
+an operation by giving a maximum number that you want to compute, or not
+include an operation by pressing Enter.
 
 ## Default
 This is setup for my default setting:
