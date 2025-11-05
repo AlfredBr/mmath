@@ -57,7 +57,7 @@ This allows you to convert a squaring problem into an easier 1 digit by 2 digit
 multiplication, with an easy addition at the end.
 
 ## Times Tables (tt)
-'times tables` (`tt` for short) asks you for what times table to practice, and a
+`times tables` (`tt` for short) asks you for what times table to practice, and a
 maximum number to go to. For example, the "2" times table with a max of 10 will ask
 for multiplication of 2 by any number 1-10.
 
@@ -74,7 +74,7 @@ of solutions +- 0.1 as correct.
 ## Custom
 This walks you through a prompt to select multiple operations. You can select
 an operation by giving a maximum number that you want to compute, or not
-include an operation by pressing Enter.
+include an operation by pressing `Enter`.
 
 ## Default
 This is setup for my default setting:
