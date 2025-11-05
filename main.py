@@ -1,4 +1,5 @@
 import random
+import os
 import sys
 import time
 
@@ -11,6 +12,7 @@ from helpers import (
     division,
     get_int,
     multiplication,
+    times_tables,
     plus_minus,
     square,
     squareroot,
@@ -21,13 +23,13 @@ from helpers import (
 def get_maxes(message: str) -> int | bool:
     while True:
         user_input = input(message).lower().strip()
-        if user_input == "q":
-            sys.exit()
-        elif user_input == "":
+        quit_app(user_input)
+        if user_input == "":
             print("Skipping...")
             return False
         try:
             num = int(user_input)
+            num = max(num, 1)
             break
         except ValueError:
             print(
@@ -80,9 +82,7 @@ def configure_custom():
     return custom
 
 
-def play_round(trial, *args: int) -> None:
-    print(Fore.BLUE + "How many questions?" + Fore.RESET)
-    num_q = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+def play_round(trial, num_q: int, *args: int) -> None:
     errors = 0
     start = time.time()
     for i in range(num_q):
@@ -101,34 +101,94 @@ def play_round(trial, *args: int) -> None:
     )
 
 
+def quit_app(check: str) -> None:
+    if check.lower().strip() == "q":
+        os.system("clear")
+        sys.exit()
+
+
+def configure():
+    operations = [
+        "+",
+        "-",
+        "(+/-)",
+        "*",
+        "/",
+        "^",
+        "sqrt",
+        "times tables",
+        "tt",
+        "custom",
+        "default",
+    ]
+    operations_str = ", ".join(operations)
+    print(Fore.BLUE + f"What do you want to practice? ({operations_str})" + Fore.RESET)
+    op = input(Fore.GREEN + "Operation: " + Fore.RESET)
+    op = op.lower().strip()
+    quit_app(op)
+    while op not in operations:
+        print(
+            Fore.RED
+            + f"Invalid operation. Please enter a valid operation ({operations_str})."
+            + Fore.RESET
+        )
+        op = input(Fore.GREEN + "Operation: " + Fore.RESET)
+        op = op.lower()
+        quit_app(op)
+    print(Fore.BLUE + "How many questions?" + Fore.RESET)
+    num_q = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+    return op, num_q
+
+
+def again_msg() -> None:
+    print(
+        Fore.BLUE
+        + "Again? ("
+        + Fore.GREEN
+        + "y"
+        + Fore.RESET
+        + "/"
+        + Fore.RED
+        + "n"
+        + Fore.RESET
+        + ")"
+    )
+    return None
+
+
+def main_loop(*args):
+    again = "y"
+    while again == "y":
+        play_round(*args)
+        again_msg()
+        again = input()
+        quit_app(again)
+        while again.lower() not in {"y", "n", "q"}:
+            print(Fore.RED + "Invalid input." + Fore.RESET)
+            again_msg()
+            again = input()
+            quit_app(again)
+
+
 def main() -> None:
     while True:
         clear_cons()
-        operations = ["+", "-", "(+/-)", "*", "/", "^", "sqrt", "custom", "default"]
-        operations_str = ", ".join(operations)
-        print(
-            Fore.BLUE + f"What do you want to practice? ({operations_str})" + Fore.RESET
-        )
-        op = input(Fore.GREEN + "Operation: " + Fore.RESET)
-        op = op.lower().strip()
-        if op == "q":
-            sys.exit()
-        while op not in operations:
-            print(
-                Fore.RED
-                + f"Invalid operation. Please enter a valid operation ({operations})."
-                + Fore.RESET
-            )
-            op = input(Fore.GREEN + "operation: " + Fore.RESET)
-            op = op.lower()
-            if op == "q":
-                sys.exit()
+        op, num_q = configure()
         if op == "custom":
             trial = configure_custom()
-            play_round(trial)
+            main_loop(trial, num_q)
         elif op == "default":
             trial = all_custom(999, 999, 99, 999, 99, 99)
-            play_round(trial)
+            main_loop(trial, num_q)
+        elif op in {"times tables", "tt"}:
+            trial = times_tables
+            print(Fore.BLUE + "Which times table do you want to practice?" + Fore.RESET)
+            table_number = get_int(
+                Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True
+            )
+            print(Fore.BLUE + "What number do you want to practice up to?" + Fore.RESET)
+            top = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+            main_loop(trial, num_q, table_number, top)
         else:
             if op == "+":
                 trial = addition
@@ -146,22 +206,7 @@ def main() -> None:
                 trial = squareroot
             print(Fore.BLUE + "What is the max number?" + Fore.RESET)
             top = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
-            play_round(trial, top)
-        print(
-            Fore.BLUE
-            + "Again? ("
-            + Fore.GREEN
-            + "y"
-            + Fore.RESET
-            + "/"
-            + Fore.RED
-            + "n"
-            + Fore.RESET
-            + ")"
-        )
-        again = input()
-        if again == "n":
-            sys.exit()
+            main_loop(trial, num_q, top)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ def get_float(message: str) -> float:
     while True:
         user_input = input(message).lower().strip()
         if user_input == "q":
+            os.system("clear")
             sys.exit()
         try:
             num = float(user_input)
@@ -25,10 +26,11 @@ def get_int(message: str, pos: bool = False) -> int:
     while True:
         user_input = input(message).lower().strip()
         if user_input == "q":
+            os.system("clear")
             sys.exit()
         try:
             num = int(user_input)
-            if (num <= 1) & pos:
+            if (num < 1) & pos:
                 print(Fore.RED + "Please enter a number greater than 1." + Fore.RESET)
                 continue
             break
@@ -45,6 +47,7 @@ def get_expr(message: str) -> float:
     while True:
         user_input = input(message).lower().strip()
         if user_input == "q":
+            os.system("clear")
             sys.exit()
         try:
             num = numexpr.evaluate(user_input)
@@ -74,6 +77,10 @@ def clear_cons() -> None:
     text = Fore.CYAN + "Enter q to quit at any time  " + Fore.RESET
     print(Fore.CYAN + f"{text:>{rows}}" + Fore.RESET)
     print("\n")
+
+
+def get_two_rand(top: int) -> tuple[int, int]:
+    return (random.randint(2, top), random.randint(2, top))
 
 
 def addition(top: int) -> int:
@@ -118,10 +125,27 @@ def multiplication(top: int) -> int:
     return num_wrong
 
 
+def times_tables(num: int, top: int) -> int:
+    num_wrong = 0
+    if random.random() < 0.5:
+        a = random.randint(1, top)
+        b = num
+    else:
+        a = num
+        b = random.randint(1, top)
+    ans = get_int(f"{a} * {b} = ", pos=True)
+    while ans != (a * b):
+        print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
+        num_wrong += 1
+        ans = get_int(f"{a} * {b} = ", pos=True)
+    return num_wrong
+
+
 def division(top: int) -> int:
     num_wrong = 0
     dividend = random.randint(1, top)
-    divisor = random.randint(1, floor(dividend/5))
+    divisor = random.randint(1, max(floor(dividend / 5), 1))
+    divisor = max(divisor, 1)
     print(f"{dividend} / {divisor} = ")
     quotient = get_int("Quotient = ")
     remainder = get_int("Remainder = ")
