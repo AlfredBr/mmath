@@ -50,9 +50,9 @@ for multiplication of 2 by any number 1-10.
 This asks you to compute the square root of a given number. It assumes you are
 using one iteration of Newton's method, using the closest perfect square as a
 first guess. 
-$$
+```math
 \sqrt{n} \approx x_0 - \frac{x_0^2-n}{2x_0}
-$$
+```
 You can input expressions like "8 + 5/12", and it accepts a range
 of solutions +- 0.1 as correct.
 
