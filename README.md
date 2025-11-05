@@ -39,7 +39,22 @@ you a series of questions.
 `/` asks you to compute the dividend and remainder exactly.
 
 ## Square
-`^` asks you to compute the square of a number exactly.
+`^` asks you to compute the square of a number exactly. You can use the
+following formula, choosing $d$ to be a convenient number:
+```math
+n^2 = (n-d)(n+d) + d^2
+```
+For example, to compute $67^2$:
+```math
+\begin{align}
+67^2 &= (67-3)(67+3) + 3^2 \\
+&= (64)(70) + 3^2 \\
+&= 4200 + 280 + 9 \\
+&= 4489
+\end{align}
+```
+This allows you to convert a squaring problem into an easier 1 digit by 2 digit
+multiplication, with an easy addition at the end.
 
 ## Times Tables (tt)
 'times tables` (`tt` for short) asks you for what times table to practice, and a
