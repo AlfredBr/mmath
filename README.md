@@ -78,12 +78,12 @@ include an operation by pressing `Enter`.
 
 ## Default
 This is setup for my default setting:
-    + Addition up to 999
-    + Subtraction up to 999
-    + Multiplication up to 99
-    + Division up to 999
-    + Squaring up to 99
-    + Square root up to 99
+- Addition up to 999
+- Subtraction up to 999
+- Multiplication up to 99
+- Division up to 999
+- Squaring up to 99
+- Square root up to 99
 
 # Future improvements
     + add more operations (complex numbers, more exponents, modulus, fractions)
