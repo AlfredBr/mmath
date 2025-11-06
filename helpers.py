@@ -12,12 +12,28 @@ def quit_check(check: str) -> None:
         raise SystemExit
 
 
-def get_maxes(message: str) -> int | None:
+def get_maxes(operation: str) -> int | None:
     while True:
-        user_input = input(message).lower().strip()
+        user_input = (
+            input(
+                Fore.BLUE
+                + "Enter a maximum for "
+                + Fore.YELLOW
+                + f"{operation.strip().lower()}"
+                + Fore.BLUE
+                + ", or "
+                + Fore.YELLOW
+                + "[Enter]"
+                + Fore.BLUE
+                + " to skip: "
+                + Fore.RESET
+            )
+            .lower()
+            .strip()
+        )
         quit_check(user_input)
         if user_input == "":
-            print("Skipping...")
+            print(Fore.GREEN + "Skipping..." + Fore.RESET)
             return None
         try:
             num = int(user_input)

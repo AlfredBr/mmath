@@ -1,4 +1,5 @@
 import random
+import statistics
 import time
 
 from colorama import Fore
@@ -21,21 +22,17 @@ from operations import (
     times_tables,
 )
 
+ROUNDING_NUM = 2
+
 
 def configure_custom():
     while True:
-        user_add = get_maxes("Enter a maximum number for addition, or Enter to skip: ")
-        user_sub = get_maxes(
-            "Enter a maximum number for subtraction, or Enter to skip: "
-        )
-        user_mult = get_maxes(
-            "Enter a maximum number for multiplication, or Enter to skip: "
-        )
-        user_div = get_maxes("Enter a maximum number for division, or Enter to skip: ")
-        user_sq = get_maxes("Enter a maximum number to square, or Enter to skip: ")
-        user_sqrt = get_maxes(
-            "Enter a maximum number to square root, or Enter to skip: "
-        )
+        user_add = get_maxes("addition")
+        user_sub = get_maxes("subtraction")
+        user_mult = get_maxes("multiplication")
+        user_div = get_maxes("division")
+        user_sq = get_maxes("square")
+        user_sqrt = get_maxes("square root")
         if not any([user_add, user_sub, user_mult, user_div, user_sq, user_sqrt]):
             print(Fore.RED + "Error: please specify at least one maximum." + Fore.RESET)
             continue
@@ -66,29 +63,105 @@ def configure_custom():
             return square(user_sq)
         if operation == "sqrt":
             return squareroot(user_sqrt)
-        print(Fore.RED + "ERROR: SHOULD NEVER SEE THIS" + Fore.RESET)
+        print(
+            Fore.RED + "ERROR IN configure_custom(): SHOULD NEVER SEE THIS" + Fore.RESET
+        )
         raise SystemExit
 
     return custom
 
 
-def play_round(trial, num_q: int, *args: int) -> None:
+def play_round(trial, num_q: int, *args: int):
     errors = 0
-    start = time.time()
+    q_times = []
+    question_log = {}
+    start_round = time.time()
     for i in range(num_q):
         clear_cons()
         print(Fore.BLUE + f"Question {i + 1}\n" + Fore.RESET)
-        errors += trial(*args)
-    end = time.time()
+        n_errors, q_time, nums = trial(*args)
+        errors += n_errors
+        q_times.append(round(q_time, ROUNDING_NUM))
+        if nums in question_log:
+            question_log[nums] = (question_log[nums] + q_time) / 2
+        else:
+            question_log[nums] = q_time
+        clear_cons()
+    end_round = time.time()
+    clear_cons()
     print(
-        Fore.BLUE + f"Solved {num_q} problems in {round(end - start, 2)} seconds "
-        f"with {errors} error(s)." + Fore.RESET
+        Fore.BLUE
+        + "Solved "
+        + Fore.YELLOW
+        + f"{num_q}"
+        + Fore.BLUE
+        + " problems in "
+        + Fore.YELLOW
+        + f"{round(end_round - start_round, ROUNDING_NUM)}"
+        + Fore.BLUE
+        + " seconds with "
+        + Fore.YELLOW
+        + f"{errors}"
+        + Fore.BLUE
+        + " error(s).\n"
+        + Fore.RESET
     )
     print(
         Fore.BLUE
-        + f"Average time: {round((end - start) / num_q, 4)} seconds"
+        + "Average time: \t\t"
+        + Fore.YELLOW
+        + f"{round(statistics.mean(q_times), ROUNDING_NUM)}"
+        + Fore.BLUE
+        + " seconds"
         + Fore.RESET
     )
+    if len(q_times) > 1:
+        print(
+            Fore.BLUE
+            + "Standard deviation: \t"
+            + Fore.YELLOW
+            + f"{round(statistics.stdev(q_times), ROUNDING_NUM)}"
+            + Fore.BLUE
+            + " seconds"
+            + Fore.RESET
+        )
+        print(
+            Fore.BLUE
+            + "Median time: \t\t"
+            + Fore.YELLOW
+            + f"{round(statistics.median(q_times), ROUNDING_NUM)}"
+            + Fore.BLUE
+            + " seconds"
+            + Fore.RESET
+        )
+        print(
+            Fore.BLUE
+            + "Shortest time: \t\t"
+            + Fore.YELLOW
+            + f"{round(min(q_times), ROUNDING_NUM)}"
+            + Fore.BLUE
+            + " seconds."
+            + Fore.RESET
+        )
+        print(
+            Fore.BLUE
+            + "Longest time: \t\t"
+            + Fore.YELLOW
+            + f"{round(max(q_times), ROUNDING_NUM)}"
+            + Fore.BLUE
+            + " seconds."
+            + Fore.RESET
+        )
+        print(
+            Fore.BLUE
+            + "Range: \t\t\t"
+            + Fore.YELLOW
+            + f"{round(max(q_times) - min(q_times), ROUNDING_NUM)}"
+            + Fore.BLUE
+            + " seconds.\n"
+            + Fore.RESET
+        )
+    return question_log
 
 
 def configure() -> tuple[str, int]:
@@ -124,34 +197,74 @@ def configure() -> tuple[str, int]:
     return op, num_q
 
 
+def print_data(q_log):
+    LIMIT = 10
+    message = f"\n{Fore.BLUE}Averages:"
+    sorted_questions = sorted(q_log.items(), key=lambda item: item[1], reverse=True)
+    print(message)
+    for op_nums, q_time in sorted_questions[:LIMIT]:
+        op, *nums = op_nums
+        try:
+            a, b = nums
+            print(
+                Fore.BLUE
+                + f"{a}"
+                + Fore.YELLOW
+                + f" {op} "
+                + Fore.BLUE
+                + f"{b} | "
+                + Fore.GREEN
+                + f"{round(q_time, ROUNDING_NUM)} seconds"
+                + Fore.RESET
+            )
+        except ValueError:
+            a = nums[0]
+            print(
+                Fore.BLUE
+                + f"{a}"
+                + Fore.YELLOW
+                + f" {op}"
+                + Fore.BLUE
+                + " | "
+                + Fore.GREEN
+                + f"{round(q_time, ROUNDING_NUM)} seconds"
+                + Fore.RESET
+            )
+
+
 def again_msg() -> None:
     print(
-        Fore.BLUE
+        "\n"
+        + Fore.BLUE
         + "Again? ("
         + Fore.GREEN
         + "y"
-        + Fore.RESET
+        + Fore.BLUE
         + "/"
         + Fore.RED
         + "n"
+        + Fore.BLUE
+        + f"), or {Fore.YELLOW}d{Fore.BLUE} to view data."
         + Fore.RESET
-        + ")"
     )
-    return None
 
 
 def main_loop(*args) -> None:
     again = "y"
-    while again == "y":
-        play_round(*args)
-        again_msg()
-        again = input()
-        quit_check(again)
-        while again.lower() not in {"y", "n", "q"}:
-            print(Fore.RED + "Invalid input." + Fore.RESET)
+    while True:
+        question_log = play_round(*args)
+        while True:
             again_msg()
-            again = input()
+            again = input().lower().strip()
             quit_check(again)
+            if again == "y":
+                break
+            if again == "n":
+                return
+            if again == "d":
+                print_data(question_log)
+            if again not in {"y", "n", "d", "q"}:
+                print(Fore.RED + "Invalid input." + Fore.RESET)
 
 
 def main() -> None:
