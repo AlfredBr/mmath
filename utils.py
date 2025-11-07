@@ -32,7 +32,7 @@ def get_maxes(operation: str) -> int | None:
         )
         quit_check(user_input)
         if user_input == "":
-            print(Fore.GREEN + "Skipping..." + Fore.RESET)
+            print(Fore.GREEN + "Skipping...\n" + Fore.RESET)
             return None
         try:
             num: int = int(user_input)

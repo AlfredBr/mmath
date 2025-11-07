@@ -67,6 +67,7 @@ def configure() -> tuple[str, int]:
             continue
         if op in operations:
             break
+        print(Fore.RED + "Invalid input." + Fore.RESET)
     print(Fore.BLUE + "How many questions?" + Fore.RESET)
     num_q: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
     return op, num_q
