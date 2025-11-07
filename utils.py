@@ -1,5 +1,4 @@
 import os
-import random
 import shutil
 
 import numexpr
@@ -36,7 +35,7 @@ def get_maxes(operation: str) -> int | None:
             print(Fore.GREEN + "Skipping..." + Fore.RESET)
             return None
         try:
-            num = int(user_input)
+            num: int = int(user_input)
             if num < 1:
                 print(
                     Fore.RED
@@ -59,7 +58,7 @@ def get_float(message: str) -> float:
         user_input = input(message).lower().strip()
         quit_check(user_input)
         try:
-            num = float(user_input)
+            num: float = float(user_input)
             break
         except ValueError:
             print(Fore.RED + "Invalid input. Please enter a valid number." + Fore.RESET)
@@ -71,7 +70,7 @@ def get_int(message: str, pos: bool = False) -> int:
         user_input = input(message).lower().strip()
         quit_check(user_input)
         try:
-            num = int(user_input)
+            num: int = int(user_input)
             if (num < 1) and pos:
                 print(Fore.RED + "Please enter a number greater than 1." + Fore.RESET)
                 continue
@@ -117,7 +116,3 @@ def clear_cons() -> None:
     text = Fore.CYAN + "Enter q to quit at any time  " + Fore.RESET
     print(Fore.CYAN + f"{text:>{rows}}" + Fore.RESET)
     print("\n")
-
-
-def get_two_rand(top: int) -> tuple[int, int]:
-    return (random.randint(2, top), random.randint(2, top))
