@@ -106,8 +106,12 @@ def main_loop(*args) -> None:
                 return
             if again == "d":
                 print_data(question_log)
-            if again not in {"y", "n", "d", "q"}:
+            else:
                 print(Fore.RED + "Invalid input." + Fore.RESET)
+
+
+# Special cases for the default and custom function
+# as those have different ways of defining max number
 
 
 def main() -> None:

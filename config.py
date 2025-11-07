@@ -43,7 +43,7 @@ ALL_OPTIONS = {
     "tt": "alias for times tables",
     "custom": "configure custom session",
     "default": "3 digit addition/subtraction, 2 digit multiplication, "
-     "3 digit division, 2 digit squaring/square root",
+    "3 digit division, 2 digit squaring/square root",
 }
 
 

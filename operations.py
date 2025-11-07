@@ -14,6 +14,8 @@ from utils import get_expr, get_int, quit_check
 # They should return the number of errors, the time for the question,
 # and a tuple that contains the operation symbol and the numbers asked.
 # Special cases can be given a specific config function in config.py
+# 
+# Be sure to add new functions to the ALL_OPERATIONS dictionary in config.py
 ##################################################################################################
 
 
