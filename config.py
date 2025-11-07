@@ -155,7 +155,7 @@ def print_summary(
             + Fore.YELLOW
             + f"{round(min(q_times), ROUNDING_NUM)}"
             + Fore.BLUE
-            + " seconds."
+            + " seconds"
             + Fore.RESET
         )
         print(
@@ -164,7 +164,7 @@ def print_summary(
             + Fore.YELLOW
             + f"{round(max(q_times), ROUNDING_NUM)}"
             + Fore.BLUE
-            + " seconds."
+            + " seconds"
             + Fore.RESET
         )
         print(
@@ -173,7 +173,7 @@ def print_summary(
             + Fore.YELLOW
             + f"{round(max(q_times) - min(q_times), ROUNDING_NUM)}"
             + Fore.BLUE
-            + " seconds.\n"
+            + " seconds\n"
             + Fore.RESET
         )
 
