@@ -139,4 +139,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n" + Fore.BLUE + "Program interrupted. Exiting..." + Fore.RESET)
+        print("\n\n" + Fore.BLUE + "Program interrupted. Exiting..." + Fore.RESET)
