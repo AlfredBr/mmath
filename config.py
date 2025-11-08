@@ -19,19 +19,10 @@ from utils import get_int, get_maxes, quit_check
 ROUNDING_NUM: int = 2
 
 
-CUSTOM_OPERATIONS = {
-    "addition": addition,
-    "subtraction": subtraction,
-    "multiplication": multiplication,
-    "division": division,
-    "square": square,
-    "square root": squareroot,
-}
-
+# Used to list options, be sure to see ALL_OPERATIONS at the bottom of this file
 ALL_OPTIONS = {
     "+": "addition",
     "-": "subtraction",
-    "(+/-)": "addition and subtraction",
     "+/-": "addition and subtraction",
     "pm": "addition and subtraction",
     "+-": "addition and subtraction",
@@ -49,7 +40,8 @@ ALL_OPTIONS = {
 
 def print_options():
     for op, desc in ALL_OPTIONS.items():
-        print(Fore.YELLOW + f"{op:>15}" + Fore.GREEN + f" | {desc}" + Fore.RESET + "\n")
+        print(Fore.YELLOW + f"{op:>15}" + Fore.BLUE + f" | {desc}" + Fore.RESET)
+    print("\n")
 
 
 def configure() -> tuple[str, int]:
@@ -71,6 +63,17 @@ def configure() -> tuple[str, int]:
     print(Fore.BLUE + "How many questions?" + Fore.RESET)
     num_q: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
     return op, num_q
+
+
+# These are the options that are included in the 'custom' setting
+CUSTOM_OPERATIONS = {
+    "addition": addition,
+    "subtraction": subtraction,
+    "multiplication": multiplication,
+    "division": division,
+    "square": square,
+    "square root": squareroot,
+}
 
 
 def configure_custom():
@@ -136,7 +139,7 @@ def print_summary(
             Fore.BLUE
             + "Standard deviation: \t"
             + Fore.YELLOW
-            + f"{round(statistics.stdev(q_times), ROUNDING_NUM)}"
+            + f"{round(statistics.stdev(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
             + " seconds"
             + Fore.RESET
@@ -145,7 +148,7 @@ def print_summary(
             Fore.BLUE
             + "Median time: \t\t"
             + Fore.YELLOW
-            + f"{round(statistics.median(q_times), ROUNDING_NUM)}"
+            + f"{round(statistics.median(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
             + " seconds"
             + Fore.RESET
@@ -154,7 +157,7 @@ def print_summary(
             Fore.BLUE
             + "Shortest time: \t\t"
             + Fore.YELLOW
-            + f"{round(min(q_times), ROUNDING_NUM)}"
+            + f"{round(min(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
             + " seconds"
             + Fore.RESET
@@ -163,7 +166,7 @@ def print_summary(
             Fore.BLUE
             + "Longest time: \t\t"
             + Fore.YELLOW
-            + f"{round(max(q_times), ROUNDING_NUM)}"
+            + f"{round(max(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
             + " seconds"
             + Fore.RESET
@@ -172,7 +175,7 @@ def print_summary(
             Fore.BLUE
             + "Range: \t\t\t"
             + Fore.YELLOW
-            + f"{round(max(q_times) - min(q_times), ROUNDING_NUM)}"
+            + f"{round(max(q_times) - min(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
             + " seconds\n"
             + Fore.RESET
@@ -182,7 +185,6 @@ def print_summary(
 ALL_OPERATIONS = {
     "+": addition,
     "-": subtraction,
-    "(+/-)": plus_minus,
     "+/-": plus_minus,
     "pm": plus_minus,
     "+-": plus_minus,

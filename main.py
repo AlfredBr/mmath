@@ -11,6 +11,7 @@ from config import (
     print_summary,
 )
 from utils import (
+    RestartProgram,
     clear_cons,
     get_int,
     quit_check,
@@ -115,24 +116,27 @@ def main_loop(*args) -> None:
 
 
 def main() -> None:
-    while True:
-        clear_cons()
-        op, num_q = configure()
-        if op == "custom":
-            trial = configure_custom()
-            main_loop(trial, num_q)
-            continue
-        if op == "default":
-            trial = ALL_OPERATIONS[op]
-            main_loop(trial, num_q)
-            continue
-        if op in {"times tables", "tt"}:
-            trial = configure_times_tables()
-        else:
-            trial = ALL_OPERATIONS[op]
-        print(Fore.BLUE + "What is the max number?" + Fore.RESET)
-        top = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
-        main_loop(trial, num_q, top)
+    try:
+        while True:
+            clear_cons()
+            op, num_q = configure()
+            if op == "custom":
+                trial = configure_custom()
+                main_loop(trial, num_q)
+                continue
+            if op == "default":
+                trial = ALL_OPERATIONS[op]
+                main_loop(trial, num_q)
+                continue
+            if op in {"times tables", "tt"}:
+                trial = configure_times_tables()
+            else:
+                trial = ALL_OPERATIONS[op]
+            print(Fore.BLUE + "What is the max number?" + Fore.RESET)
+            top = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+            main_loop(trial, num_q, top)
+    except RestartProgram:
+        main()
 
 
 if __name__ == "__main__":

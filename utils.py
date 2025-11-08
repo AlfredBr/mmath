@@ -5,10 +5,17 @@ import numexpr
 from colorama import Fore
 
 
+class RestartProgram(Exception):
+    pass
+
+
 def quit_check(check: str) -> None:
-    if check.lower().strip() == "q":
+    check = check.lower().strip()
+    if check == "q":
         os.system("clear")
         raise SystemExit
+    if check == "r":
+        raise RestartProgram
 
 
 def get_maxes(operation: str) -> int | None:
@@ -113,6 +120,12 @@ def clear_cons() -> None:
             os.system("clear")
     except Exception:
         pass
-    text = Fore.CYAN + "Enter q to quit at any time  " + Fore.RESET
-    print(Fore.CYAN + f"{text:>{rows}}" + Fore.RESET)
+    quit_text = (
+        Fore.CYAN + f"Enter {Fore.YELLOW}q{Fore.CYAN} to quit  " + Fore.RESET
+    )
+    restart_text = (
+        Fore.CYAN + f"Enter {Fore.YELLOW}r{Fore.CYAN} to restart  " + Fore.RESET
+    )
+    print(Fore.CYAN + f"{quit_text}" + Fore.RESET)
+    print(f"{restart_text}")
     print("\n")

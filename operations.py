@@ -137,10 +137,12 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
     q_time: float = time.time() - start
     print("\n")
     print(
-            f"{Fore.BLUE}{'Newton\'s method approximation:':<30} {Fore.YELLOW}{best_answer}{Fore.RESET}"
+        f"{Fore.BLUE}{'Newton\'s method approximation:':<30} {Fore.YELLOW}{best_answer}{Fore.RESET}"
     )
     print(f"{Fore.BLUE}{'Actual:':<30} {Fore.YELLOW}{true_root}{Fore.RESET}")
-    print(f"{Fore.BLUE}{'Difference:':<30} {Fore.YELLOW}{abs(best_answer - true_root)}{Fore.RESET}")
+    print(
+        f"{Fore.BLUE}{'Difference:':<30} {Fore.YELLOW}{abs(best_answer - true_root)}{Fore.RESET}"
+    )
     q: str = (
         input(Fore.GREEN + "Press enter to continue...\n" + Fore.RESET).strip().lower()
     )
