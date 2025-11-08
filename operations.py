@@ -14,7 +14,7 @@ from utils import get_expr, get_int, quit_check
 # They should return the number of errors, the time for the question,
 # and a tuple that contains the operation symbol and the numbers asked.
 # Special cases can be given a specific config function in config.py
-# 
+#
 # Be sure to add new functions to the ALL_OPERATIONS dictionary in config.py
 ##################################################################################################
 
@@ -116,6 +116,7 @@ def square(top: int) -> tuple[int, float, tuple[str, int]]:
     q_time: float = time.time() - start
     return num_wrong, q_time, ("^", a)
 
+
 ######################################################
 # defines how close a guess has to be for squareroot()
 TOLERANCE: float = 0.1
@@ -134,11 +135,15 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
         num_wrong += 1
         ans = get_expr(f"sqrt({a}) = ")
     q_time: float = time.time() - start
-    print(f"Your answer: {ans}")
-    print(f"Best answer: {best_answer}")
-    print(f"Actual: {true_root}")
-    print(f"Error: {abs(best_answer - true_root)}")
-    q: str = input("Press enter to continue...\n").strip().lower()
+    print("\n")
+    print(
+            f"{Fore.BLUE}{'Newton\'s method approximation:':<30} {Fore.YELLOW}{best_answer}{Fore.RESET}"
+    )
+    print(f"{Fore.BLUE}{'Actual:':<30} {Fore.YELLOW}{true_root}{Fore.RESET}")
+    print(f"{Fore.BLUE}{'Difference:':<30} {Fore.YELLOW}{abs(best_answer - true_root)}{Fore.RESET}")
+    q: str = (
+        input(Fore.GREEN + "Press enter to continue...\n" + Fore.RESET).strip().lower()
+    )
     quit_check(q)
     return num_wrong, q_time, ("sqrt", a)
 
