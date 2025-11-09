@@ -9,10 +9,31 @@ class RestartProgram(Exception):
     pass
 
 
+def clear_console():
+    try:
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            os.system("clear")
+    except Exception:
+        print("\033c", end="")
+
+
+def print_ui() -> None:
+    clear_console()
+    quit_text = Fore.CYAN + f"Enter {Fore.YELLOW}q{Fore.CYAN} to quit  " + Fore.RESET
+    restart_text = (
+        Fore.CYAN + f"Enter {Fore.YELLOW}r{Fore.CYAN} to restart  " + Fore.RESET
+    )
+    print(Fore.CYAN + f"{quit_text}" + Fore.RESET)
+    print(f"{restart_text}")
+    print("\n")
+
+
 def quit_check(check: str) -> None:
     check = check.lower().strip()
     if check == "q":
-        os.system("clear")
+        clear_console()
         raise SystemExit
     if check == "r":
         raise RestartProgram
@@ -106,26 +127,3 @@ def get_expr(message: str) -> float:
                 + Fore.RESET
             )
     return num
-
-
-def clear_cons() -> None:
-    try:
-        rows, columns = shutil.get_terminal_size()
-    except Exception:
-        rows = 80
-    try:
-        if os.name == "nt":
-            os.system("cls")
-        else:
-            os.system("clear")
-    except Exception:
-        pass
-    quit_text = (
-        Fore.CYAN + f"Enter {Fore.YELLOW}q{Fore.CYAN} to quit  " + Fore.RESET
-    )
-    restart_text = (
-        Fore.CYAN + f"Enter {Fore.YELLOW}r{Fore.CYAN} to restart  " + Fore.RESET
-    )
-    print(Fore.CYAN + f"{quit_text}" + Fore.RESET)
-    print(f"{restart_text}")
-    print("\n")

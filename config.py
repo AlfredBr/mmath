@@ -5,7 +5,8 @@ from colorama import Fore
 
 from operations import (
     addition,
-    all_custom,
+    complex_multiplication,
+    default,
     division,
     multiplication,
     plus_minus,
@@ -27,6 +28,7 @@ ALL_OPTIONS = {
     "pm": "addition and subtraction",
     "+-": "addition and subtraction",
     "*": "multiplication",
+    "complex": "complex multiplication",
     "/": "division with remainder",
     "^": "square",
     "sqrt": "square root",
@@ -39,8 +41,9 @@ ALL_OPTIONS = {
 
 
 def print_options():
+    width: int = max(len(v) for v in ALL_OPTIONS)
     for op, desc in ALL_OPTIONS.items():
-        print(Fore.YELLOW + f"{op:>15}" + Fore.BLUE + f" | {desc}" + Fore.RESET)
+        print(Fore.YELLOW + f" {op:>{width}}" + Fore.BLUE + f" | {desc}" + Fore.RESET)
     print("\n")
 
 
@@ -70,6 +73,7 @@ CUSTOM_OPERATIONS = {
     "addition": addition,
     "subtraction": subtraction,
     "multiplication": multiplication,
+    "complex multiplication": complex_multiplication,
     "division": division,
     "square": square,
     "square root": squareroot,
@@ -122,12 +126,13 @@ def print_summary(
         + Fore.YELLOW
         + f"{errors}"
         + Fore.BLUE
-        + " error(s).\n"
+        + f" {'error' if errors == 1 else 'errors'}.\n"
         + Fore.RESET
     )
+    width: int = 20
     print(
         Fore.BLUE
-        + "Average time: \t\t"
+        + f"{'Average time:':<{width}}"
         + Fore.YELLOW
         + f"{round(statistics.mean(q_times), ROUNDING_NUM)}"
         + Fore.BLUE
@@ -137,7 +142,7 @@ def print_summary(
     if len(q_times) > 1:
         print(
             Fore.BLUE
-            + "Standard deviation: \t"
+            + f"{'Standard deviation:':<{width}}"
             + Fore.YELLOW
             + f"{round(statistics.stdev(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
@@ -146,7 +151,7 @@ def print_summary(
         )
         print(
             Fore.BLUE
-            + "Median time: \t\t"
+            + f"{'Median time:':<{width}}"
             + Fore.YELLOW
             + f"{round(statistics.median(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
@@ -155,7 +160,7 @@ def print_summary(
         )
         print(
             Fore.BLUE
-            + "Shortest time: \t\t"
+            + f"{'Shortest time:':<{width}}"
             + Fore.YELLOW
             + f"{round(min(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
@@ -164,7 +169,7 @@ def print_summary(
         )
         print(
             Fore.BLUE
-            + "Longest time: \t\t"
+            + f"{'Longest time:':<{width}}"
             + Fore.YELLOW
             + f"{round(max(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
@@ -173,7 +178,7 @@ def print_summary(
         )
         print(
             Fore.BLUE
-            + "Range: \t\t\t"
+            + f"{'Range:':<{width}}"
             + Fore.YELLOW
             + f"{round(max(q_times) - min(q_times), ROUNDING_NUM):<4}"
             + Fore.BLUE
@@ -189,11 +194,12 @@ ALL_OPERATIONS = {
     "pm": plus_minus,
     "+-": plus_minus,
     "*": multiplication,
+    "complex": complex_multiplication,
     "/": division,
     "^": square,
     "sqrt": squareroot,
     "times tables": times_tables,
     "tt": times_tables,
     "custom": configure_custom,
-    "default": all_custom(999, 999, 99, 999, 99, 99),
+    "default": default(),
 }

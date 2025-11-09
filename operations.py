@@ -150,26 +150,49 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
     return num_wrong, q_time, ("sqrt", a)
 
 
-def all_custom(
-    add_max: int,
-    sub_max: int,
-    mult_max: int,
-    div_max: int,
-    square_max: int,
-    sqrt_max: int,
-):
+def print_complex_number(a: int, b: int) -> str:
+    if b > 0:
+        return f"{a} + {b}i"
+    return f"{a} - {abs(b)}i"
+
+
+def complex_multiplication(top: int):
+    num_wrong: int = 0
+    a: int = random.randint(-1 * top, top)
+    b: int = random.randint(-1 * top, top)
+    c: int = random.randint(-1 * top, top)
+    d: int = random.randint(-1 * top, top)
+    print(f"({print_complex_number(a, b)}) * ({print_complex_number(c, d)}) = ")
+    start: float = time.time()
+    real_part_ans: int = get_int("Real = ")
+    imaj_part_ans: int = get_int("Imaj = ")
+    while (real_part_ans, imaj_part_ans) != (a * c - b * d, a * d + b * c):
+        print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
+        num_wrong += 1
+        print(f"({print_complex_number(a, b)}) * ({print_complex_number(c, d)}) = ")
+        real_part_ans: int = get_int("Real = ")
+        imaj_part_ans: int = get_int("Imaj = ")
+    q_time: float = time.time() - start
+    return (
+        num_wrong,
+        q_time,
+        ("*", f"({print_complex_number(a, b)})", f"({print_complex_number(c, d)})"),
+    )
+
+
+def default():
     def inner():
         num = random.randint(0, 5)
         if num == 0:
-            return addition(add_max)
+            return addition(999)
         if num == 1:
-            return subtraction(sub_max)
+            return subtraction(999)
         if num == 2:
-            return multiplication(mult_max)
+            return multiplication(99)
         if num == 3:
-            return division(div_max)
+            return division(999)
         if num == 4:
-            return square(square_max)
-        return squareroot(sqrt_max)
+            return square(99)
+        return squareroot(99)
 
     return inner

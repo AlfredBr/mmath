@@ -12,8 +12,8 @@ from config import (
 )
 from utils import (
     RestartProgram,
-    clear_cons,
     get_int,
+    print_ui,
     quit_check,
 )
 
@@ -24,7 +24,7 @@ def play_round(trial, num_q: int, *args: int):
     question_log: dict[tuple[str, int, int] | tuple[str, int], float] = {}
     start_round: float = time.time()
     for i in range(num_q):
-        clear_cons()
+        print_ui()
         print(Fore.BLUE + f"Question {i + 1}\n" + Fore.RESET)
         n_errors, q_time, nums = trial(*args)
         errors += n_errors
@@ -33,9 +33,9 @@ def play_round(trial, num_q: int, *args: int):
             question_log[nums] = (question_log[nums] + q_time) / 2
         else:
             question_log[nums] = q_time
-        clear_cons()
+        print_ui()
     end_round: float = time.time()
-    clear_cons()
+    print_ui()
     print_summary(num_q, errors, start_round, end_round, q_times)
     return question_log
 
@@ -47,30 +47,41 @@ def print_data(q_log: dict[tuple[str, int, int] | tuple[str, int], float]) -> No
     message: str = f"\n{Fore.BLUE}Averages:"
     sorted_questions = sorted(q_log.items(), key=lambda item: item[1], reverse=True)
     print(message)
-    for op_nums, q_time in sorted_questions:
-        op, *nums = op_nums
-        try:
+    number_data = [item[0] for item in sorted_questions]
+    try:
+        l_width: int = 0
+        r_width: int = 0
+        for _, a, b in number_data:
+            l_width = max(l_width, len(str(a)))
+            r_width = max(r_width, len(str(b)))
+        for op_nums, q_time in sorted_questions:
+            op, *nums = op_nums
             a, b = nums
             print(
                 Fore.BLUE
-                + f"{a:>{4}}"
+                + f"{a:>{l_width}}"
                 + Fore.YELLOW
-                + f"{op:^{3}}"
+                + f" {op} "
                 + Fore.BLUE
-                + f"{b:<{4}}"
+                + f"{b:<{r_width}}"
                 + Fore.GREEN
                 + f" | {round(q_time, ROUNDING_NUM):<4} seconds"
                 + Fore.RESET
             )
-        except ValueError:
+    except ValueError:
+        width: int = 0
+        for _, a in number_data:
+            width = max(width, len(str(a)))
+        for op_nums, q_time in sorted_questions:
+            op, *nums = op_nums
             a = nums[0]
             print(
                 Fore.BLUE
-                + f"{a:>4}"
+                + f"{a:>{width}}"
                 + Fore.YELLOW
-                + f" {op:<6}"
+                + f" {op} "
                 + Fore.GREEN
-                + " | "
+                + "| "
                 + f"{round(q_time, ROUNDING_NUM):<4} seconds"
                 + Fore.RESET
             )
@@ -118,7 +129,7 @@ def main_loop(*args) -> None:
 def main() -> None:
     try:
         while True:
-            clear_cons()
+            print_ui()
             op, num_q = configure()
             if op == "custom":
                 trial = configure_custom()
