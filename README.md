@@ -24,7 +24,7 @@ pip install colorama numexpr
 
 # Usage
 When you start the program, you can follow the prompts to choose an operation. The
-options are `+`, `-`, `(+/-)`, `*`, `/`, `^`, `sqrt`, `times tables`, `tt`, 
+options are `+`, `-`, `(+/-)`, `*`, `/`, `^`, `sqrt`, `times tables`, `tt`,
 `custom`, or `default`.
 You can enter `q` at any prompt to exit the program. After you complete the
 number of questions you specified, you will see how long it took you to
@@ -64,7 +64,7 @@ for multiplication of 2 by any number 1-10.
 ## Square Root
 This asks you to compute the square root of a given number. It assumes you are
 using one iteration of Newton's method, using the closest perfect square as a
-first guess. 
+first guess.
 ```math
 \sqrt{n} \approx x_0 - \frac{x_0^2-n}{2x_0}
 ```
