@@ -86,10 +86,13 @@ def times_tables(top: int, num: int) -> tuple[int, float, tuple[str, int, int]]:
     return num_wrong, q_time, ("*", num, other_num)
 
 
+# Defines what the maximum divisor will be. A value of 5 makes the largest divisor
+# one-fifth of the dividend.
+DIVISOR_MAX: int = 5
 def division(top: int) -> tuple[int, float, tuple[str, int, int]]:
     num_wrong: int = 0
     dividend: int = random.randint(1, top)
-    divisor: int = random.randint(1, max(floor(dividend / 5), 1))
+    divisor: int = random.randint(1, max(floor(dividend / DIVISOR_MAX), 1))
     print(f"{dividend} / {divisor} = ")
     start: float = time.time()
     quotient: int = get_int("Quotient = ")
@@ -119,7 +122,9 @@ def square(top: int) -> tuple[int, float, tuple[str, int]]:
 
 ######################################################
 # defines how close a guess has to be for squareroot()
-TOLERANCE: float = 0.1
+# a value of 0.01 means that an answer has to be within 1%
+# of the true root to be correct
+TOLERANCE: float = 0.01
 
 
 def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
@@ -128,9 +133,10 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
     true_root: float = sqrt(a)
     rounded: int = round(true_root)
     best_answer: float = rounded - (rounded**2 - a) / (2 * rounded)
+    tol = best_answer * TOLERANCE
     start: float = time.time()
     ans: float = get_expr(f"sqrt({a}) = ")
-    while abs(ans - best_answer) > TOLERANCE:
+    while abs(ans - best_answer) > tol or abs(ans - true_root) > tol:
         print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
         num_wrong += 1
         ans = get_expr(f"sqrt({a}) = ")
