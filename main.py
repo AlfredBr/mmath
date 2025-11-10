@@ -48,12 +48,17 @@ def print_data(q_log: dict[tuple[str, int, int] | tuple[str, int], float]) -> No
     sorted_questions = sorted(q_log.items(), key=lambda item: item[1], reverse=True)
     print(message)
     number_data = [item[0] for item in sorted_questions]
+    q_times = [item[1] for item in sorted_questions]
     try:
         l_width: int = 0
         r_width: int = 0
+        q_width: int = 0
         for _, a, b in number_data:
             l_width = max(l_width, len(str(a)))
             r_width = max(r_width, len(str(b)))
+        for q_time in q_times:
+            num = round(q_time, ROUNDING_NUM)
+            q_width = max(q_width, len(str(num)))
         for op_nums, q_time in sorted_questions:
             op, *nums = op_nums
             a, b = nums
@@ -65,13 +70,17 @@ def print_data(q_log: dict[tuple[str, int, int] | tuple[str, int], float]) -> No
                 + Fore.BLUE
                 + f"{b:<{r_width}}"
                 + Fore.GREEN
-                + f" | {round(q_time, ROUNDING_NUM):<4} seconds"
+                + f" | {round(q_time, ROUNDING_NUM):<{q_width}} seconds"
                 + Fore.RESET
             )
     except ValueError:
         width: int = 0
+        q_width: int = 0
         for _, a in number_data:
             width = max(width, len(str(a)))
+        for q_time in q_times:
+            num = round(q_time, ROUNDING_NUM)
+            q_width = max(q_width, len(str(num)))
         for op_nums, q_time in sorted_questions:
             op, *nums = op_nums
             a = nums[0]
@@ -82,7 +91,7 @@ def print_data(q_log: dict[tuple[str, int, int] | tuple[str, int], float]) -> No
                 + f" {op} "
                 + Fore.GREEN
                 + "| "
-                + f"{round(q_time, ROUNDING_NUM):<4} seconds"
+                + f"{round(q_time, ROUNDING_NUM):<{q_width}} seconds"
                 + Fore.RESET
             )
 
