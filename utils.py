@@ -8,7 +8,7 @@ class RestartProgram(Exception):
     pass
 
 
-def clear_console():
+def clear_console() -> None:
     try:
         if os.name == "nt":
             os.system("cls")
@@ -20,11 +20,11 @@ def clear_console():
 
 def print_ui() -> None:
     clear_console()
-    quit_text = Fore.CYAN + f"Enter {Fore.YELLOW}q{Fore.CYAN} to quit  " + Fore.RESET
+    quit_text = f"{Fore.CYAN}Enter {Fore.YELLOW}q{Fore.CYAN} to quit  {Fore.RESET}"
     restart_text = (
-        Fore.CYAN + f"Enter {Fore.YELLOW}r{Fore.CYAN} to restart  " + Fore.RESET
+        f"{Fore.CYAN}Enter {Fore.YELLOW}r{Fore.CYAN} to restart  {Fore.RESET}"
     )
-    print(Fore.CYAN + f"{quit_text}" + Fore.RESET)
+    print(f"{quit_text}")
     print(f"{restart_text}")
     print("\n")
 
@@ -42,40 +42,32 @@ def get_maxes(operation: str) -> int | None:
     while True:
         user_input = (
             input(
-                Fore.BLUE
-                + "Enter a maximum for "
-                + Fore.YELLOW
-                + f"{operation.strip().lower()}"
-                + Fore.BLUE
-                + ", or "
-                + Fore.YELLOW
-                + "[Enter]"
-                + Fore.BLUE
-                + " to skip: "
-                + Fore.RESET
+                f"{Fore.BLUE}Enter a maximum for "
+                f"{Fore.YELLOW}{operation.strip().lower()}"
+                f"{Fore.BLUE}, or "
+                f"{Fore.YELLOW}[Enter]"
+                f"{Fore.BLUE} to skip: {Fore.RESET}"
             )
             .lower()
             .strip()
         )
         quit_check(user_input)
         if user_input == "":
-            print(Fore.GREEN + "Skipping..." + Fore.RESET)
+            print(f"{Fore.GREEN}Skipping...{Fore.RESET}")
             return None
         try:
             num: int = int(user_input)
             if num < 1:
                 print(
-                    Fore.RED
-                    + "Invalid input. Please enter an integer greater than 0."
-                    + Fore.RESET
+                    f"{Fore.RED}Invalid input. "
+                    f"Please enter an integer greater than 0.{Fore.RESET}"
                 )
                 continue
             break
         except ValueError:
             print(
-                Fore.RED
-                + "Invalid input. Please enter an integer greater than 0."
-                + Fore.RESET
+                f"{Fore.RED}Invalid input. "
+                f"Please enter an integer greater than 0.{Fore.RESET}"
             )
     return num
 
@@ -88,7 +80,7 @@ def get_float(message: str) -> float:
             num: float = float(user_input)
             break
         except ValueError:
-            print(Fore.RED + "Invalid input. Please enter a valid number." + Fore.RESET)
+            print(f"{Fore.RED}Invalid input. Please enter a valid number.{Fore.RESET}")
     return num
 
 
@@ -99,14 +91,13 @@ def get_int(message: str, pos: bool = False) -> int:
         try:
             num: int = int(user_input)
             if (num < 1) and pos:
-                print(Fore.RED + "Please enter a number greater than 1." + Fore.RESET)
+                print(f"{Fore.RED}Please enter a number greater than 1.{Fore.RESET}")
                 continue
             break
         except ValueError:
             print(
-                Fore.RED
-                + "Invalid input. Please enter a valid whole number."
-                + Fore.RESET
+                f"{Fore.RED}Invalid input. "
+                f"Please enter a valid whole number.{Fore.RESET}"
             )
     return num
 
@@ -121,9 +112,7 @@ def get_expr(message: str) -> float:
             break
         except Exception:
             print(
-                Fore.RED
-                + "Invalid input. Please enter a valid expression."
-                + Fore.RESET
+                f"{Fore.RED}Invalid input. Please enter a valid expression.{Fore.RESET}"
             )
     return num
 
@@ -149,12 +138,11 @@ def get_day(message: str) -> int:
             num: int = int(user_input)
             if num < 0 or num > 6:
                 print(
-                    Fore.RED
-                    + "Please enter a number 0-6, or a day of the week."
-                    + Fore.RESET
+                    f"{Fore.RED}Please enter a number 0-6, "
+                    f"or a day of the week.{Fore.RESET}"
                 )
                 continue
             break
         except ValueError:
-            print(Fore.RED + "Invalid input." + Fore.RESET)
+            print(f"{Fore.RED}Invalid input.{Fore.RESET}")
     return num
