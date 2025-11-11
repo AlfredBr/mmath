@@ -1,5 +1,4 @@
 import os
-import shutil
 
 import numexpr
 from colorama import Fore
@@ -126,4 +125,36 @@ def get_expr(message: str) -> float:
                 + "Invalid input. Please enter a valid expression."
                 + Fore.RESET
             )
+    return num
+
+
+days: dict[str, int] = {
+    "sunday": 0,
+    "monday": 1,
+    "tuesday": 2,
+    "wednesday": 3,
+    "thursday": 4,
+    "friday": 5,
+    "saturday": 6,
+}
+
+
+def get_day(message: str) -> int:
+    while True:
+        user_input = input(message).lower().strip()
+        quit_check(user_input)
+        if user_input in days:
+            return days[user_input]
+        try:
+            num: int = int(user_input)
+            if num < 0 or num > 6:
+                print(
+                    Fore.RED
+                    + "Please enter a number 0-6, or a day of the week."
+                    + Fore.RESET
+                )
+                continue
+            break
+        except ValueError:
+            print(Fore.RED + "Invalid input." + Fore.RESET)
     return num

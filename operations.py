@@ -1,10 +1,11 @@
 import random
 import time
 from math import floor, sqrt
+import datetime
 
 from colorama import Fore
 
-from utils import get_expr, get_int, quit_check
+from utils import get_expr, get_int, quit_check, get_day
 
 ##################################################################################################
 # These should all be functions that take a single input,
@@ -86,7 +87,20 @@ def times_tables(top: int, num: int) -> tuple[int, float, tuple[str, int, int]]:
     return num_wrong, q_time, ("*", num, other_num)
 
 
-# Defines what the maximum divisor will be. A value of 5 makes the largest divisor
+def powers(top: int, base: int) -> tuple[int, float, tuple[str, int, int]]:
+    num_wrong: int = 0
+    exponent: int = random.randint(1, top)
+    start: float = time.time()
+    ans: int = get_int(f"{base}^{exponent} = ", pos=True)
+    while ans != (base**exponent):
+        print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
+        num_wrong += 1
+        ans = get_int(f"{base}^{exponent} = ", pos=True)
+    q_time: float = time.time() - start
+    return num_wrong, q_time, ("^", base, exponent)
+
+
+# Defines what the maximum divisor will be. A value of 5 makes the largest possible divisor
 # one-fifth of the dividend.
 DIVISOR_MAX: int = 5
 
@@ -163,6 +177,20 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
     return num_wrong, q_time, ("sqrt", a)
 
 
+def perfect_square(top: int):
+    num_wrong: int = 0
+    top = floor(sqrt(top))
+    a: int = random.randint(1, top)
+    start: float = time.time()
+    ans: float = get_int(f"sqrt({a**2}) = ")
+    while ans != a:
+        print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
+        num_wrong += 1
+        ans = get_expr(f"sqrt({a**2}) = ")
+    q_time: float = time.time() - start
+    return num_wrong, q_time, ("sqrt", a**2)
+
+
 def print_complex_number(a: int, b: int) -> str:
     if b > 0:
         return f"{a} + {b}i"
@@ -209,3 +237,22 @@ def default():
         return squareroot(99)
 
     return inner
+
+
+def random_date() -> datetime.date:
+    start = datetime.date(1600, 1, 1)
+    end = datetime.date(2099, 12, 31)
+    return datetime.date.fromordinal(random.randint(start.toordinal(), end.toordinal()))
+
+
+def calendar() -> tuple[int, float, tuple[str, str]]:
+    num_wrong: int = 0
+    a = random_date()
+    start: float = time.time()
+    ans: int = get_day(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
+    while ans != ((a.weekday() + 1) % 7):
+        print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
+        num_wrong += 1
+        ans = get_int(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
+    q_time: float = time.time() - start
+    return num_wrong, q_time, ("cal", a.strftime("%B %d, %Y"))

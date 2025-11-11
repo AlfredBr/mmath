@@ -7,6 +7,7 @@ from config import (
     ROUNDING_NUM,
     configure,
     configure_custom,
+    configure_powers,
     configure_times_tables,
     print_summary,
 )
@@ -150,7 +151,13 @@ def main() -> None:
                 trial = ALL_OPERATIONS[op]
                 main_loop(trial, num_q)
                 continue
-            if op in {"times tables", "tt"}:
+            if op == "cal":
+                trial = ALL_OPERATIONS[op]
+                main_loop(trial, num_q)
+                continue
+            if op == "pow":
+                trial = configure_powers()
+            elif op in {"times tables", "tt"}:
                 trial = configure_times_tables()
             else:
                 trial = ALL_OPERATIONS[op]

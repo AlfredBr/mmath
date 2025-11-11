@@ -5,11 +5,14 @@ from colorama import Fore
 
 from operations import (
     addition,
+    calendar,
     complex_multiplication,
     default,
     division,
     multiplication,
+    perfect_square,
     plus_minus,
+    powers,
     square,
     squareroot,
     subtraction,
@@ -30,10 +33,14 @@ ALL_OPTIONS = {
     "*": "multiplication",
     "complex": "complex multiplication",
     "/": "division with remainder",
-    "^": "square",
+    "^2": "square",
+    "sq": "square",
+    "pow": "powers of a specified base",
     "sqrt": "square root",
+    "psq": "square roots of perfect squares",
     "times tables": "times tables",
     "tt": "alias for times tables",
+    "cal": "find day of the week",
     "custom": "configure custom session",
     "default": "3 digit addition/subtraction, 2 digit multiplication, "
     "3 digit division, 2 digit squaring/square root",
@@ -104,6 +111,16 @@ def configure_times_tables():
 
     def inner(top: int) -> tuple[int, float, tuple[str, int, int]]:
         return times_tables(top, table_number)
+
+    return inner
+
+
+def configure_powers():
+    print(Fore.BLUE + "Which base number do you want to practice?" + Fore.RESET)
+    base: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+
+    def inner(top: int) -> tuple[int, float, tuple[str, int, int]]:
+        return powers(top, base)
 
     return inner
 
@@ -195,10 +212,14 @@ ALL_OPERATIONS = {
     "*": multiplication,
     "complex": complex_multiplication,
     "/": division,
-    "^": square,
+    "^2": square,
+    "sq": square,
+    "pow": powers,
     "sqrt": squareroot,
+    "psq": perfect_square,
     "times tables": times_tables,
     "tt": times_tables,
+    "cal": calendar,
     "custom": configure_custom,
     "default": default(),
 }
