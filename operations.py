@@ -89,6 +89,8 @@ def times_tables(top: int, num: int) -> tuple[int, float, tuple[str, int, int]]:
 # Defines what the maximum divisor will be. A value of 5 makes the largest divisor
 # one-fifth of the dividend.
 DIVISOR_MAX: int = 5
+
+
 def division(top: int) -> tuple[int, float, tuple[str, int, int]]:
     num_wrong: int = 0
     dividend: int = random.randint(1, top)
@@ -134,17 +136,22 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
     rounded: int = round(true_root)
     best_answer: float = rounded - (rounded**2 - a) / (2 * rounded)
     tol = best_answer * TOLERANCE
+    correct_range = (
+        min(true_root - tol, best_answer - tol),
+        max(true_root + tol, best_answer + tol),
+    )
     start: float = time.time()
     ans: float = get_expr(f"sqrt({a}) = ")
-    while abs(ans - best_answer) > tol or abs(ans - true_root) > tol:
+    while (ans < correct_range[0]) or (ans > correct_range[1]):
         print(Fore.RED + "--   wrong   --\n" + Fore.RESET)
         num_wrong += 1
         ans = get_expr(f"sqrt({a}) = ")
     q_time: float = time.time() - start
-    print("\n")
+    print()
     print(
         f"{Fore.BLUE}{'Newton\'s method approximation:':<30} {Fore.YELLOW}{best_answer}{Fore.RESET}"
     )
+    print(f"{Fore.BLUE}{'Range:':<30} {Fore.YELLOW}{correct_range}{Fore.RESET}")
     print(f"{Fore.BLUE}{'Actual:':<30} {Fore.YELLOW}{true_root}{Fore.RESET}")
     print(
         f"{Fore.BLUE}{'Difference:':<30} {Fore.YELLOW}{abs(best_answer - true_root)}{Fore.RESET}"

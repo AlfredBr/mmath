@@ -18,82 +18,84 @@ from utils import (
 )
 
 
-def play_round(trial, num_q: int, *args: int):
-    errors: int = 0
+class QuestionLog:
+    def __init__(self):
+        self.log = {}
+
+    def update(self, question, q_time: float, num_errors: int) -> None:
+        if question in self.log:
+            new_time = (self.log[question]["time"] + q_time) / 2
+            new_errors = self.log[question]["n_errors"] + num_errors
+            self.log[question] = {"time": new_time, "n_errors": new_errors}
+        else:
+            self.log[question] = {"time": q_time, "n_errors": num_errors}
+
+    def print_data(self) -> None:
+        sorted_questions = sorted(
+            self.log.items(), key=lambda item: item[1]["time"], reverse=True
+        )
+        number_data = [item[0] for item in sorted_questions]
+        q_times = [item[1]["time"] for item in sorted_questions]
+        l_width: int = 0
+        r_width: int = 0
+        q_width: int = 0
+        op_width: int = 0
+        for data in number_data:
+            op_width = max(op_width, len(data[0]))
+            l_width = max(l_width, len(str(data[1])))
+            if len(data) == 3:
+                r_width = max(r_width, len(str(data[2])))
+        for q_time in q_times:
+            num = round(q_time, ROUNDING_NUM)
+            q_width = max(q_width, len(str(num)))
+        for op_nums, result_dict in sorted_questions:
+            op, *nums = op_nums
+            a = nums[0]
+            b = nums[1] if len(nums) == 2 else ""
+            print(
+                Fore.BLUE
+                + f"{a:>{l_width}}"
+                + Fore.YELLOW
+                + f" {op:^{op_width}} "
+                + Fore.BLUE
+                + f"{b:<{r_width}}"
+                + Fore.GREEN
+                + f" | {round(result_dict['time'], ROUNDING_NUM):<{q_width}} seconds"
+                + " | "
+                + Fore.RESET,
+                end="",
+            )
+            if result_dict["n_errors"] != 0:
+                print(
+                    Fore.RED + f"{result_dict['n_errors']} error" + Fore.RESET,
+                    end="",
+                )
+                if result_dict["n_errors"] > 1:
+                    print(Fore.RED + "s" + Fore.RESET, end="")
+            print()
+
+
+def play_round(trial, num_q: int, *args: int) -> QuestionLog:
+    total_errors: int = 0
     q_times: list[float] = []
-    question_log: dict[tuple[str, int, int] | tuple[str, int], float] = {}
+    question_log = QuestionLog()
     start_round: float = time.time()
     for i in range(num_q):
         print_ui()
         print(Fore.BLUE + f"Question {i + 1}\n" + Fore.RESET)
         n_errors, q_time, nums = trial(*args)
-        errors += n_errors
+        total_errors += n_errors
         q_times.append(q_time)
-        if nums in question_log:
-            question_log[nums] = (question_log[nums] + q_time) / 2
-        else:
-            question_log[nums] = q_time
-        print_ui()
+        question_log.update(nums, q_time, n_errors)
     end_round: float = time.time()
     print_ui()
-    print_summary(num_q, errors, start_round, end_round, q_times)
+    print_summary(num_q, total_errors, start_round, end_round, q_times)
     return question_log
 
 
-LIMIT: int = 10
-
-
-def print_data(q_log: dict[tuple[str, int, int] | tuple[str, int], float]) -> None:
-    message: str = f"\n{Fore.BLUE}Averages:"
-    sorted_questions = sorted(q_log.items(), key=lambda item: item[1], reverse=True)
-    print(message)
-    number_data = [item[0] for item in sorted_questions]
-    q_times = [item[1] for item in sorted_questions]
-    try:
-        l_width: int = 0
-        r_width: int = 0
-        q_width: int = 0
-        for _, a, b in number_data:
-            l_width = max(l_width, len(str(a)))
-            r_width = max(r_width, len(str(b)))
-        for q_time in q_times:
-            num = round(q_time, ROUNDING_NUM)
-            q_width = max(q_width, len(str(num)))
-        for op_nums, q_time in sorted_questions:
-            op, *nums = op_nums
-            a, b = nums
-            print(
-                Fore.BLUE
-                + f"{a:>{l_width}}"
-                + Fore.YELLOW
-                + f" {op} "
-                + Fore.BLUE
-                + f"{b:<{r_width}}"
-                + Fore.GREEN
-                + f" | {round(q_time, ROUNDING_NUM):<{q_width}} seconds"
-                + Fore.RESET
-            )
-    except ValueError:
-        width: int = 0
-        q_width: int = 0
-        for _, a in number_data:
-            width = max(width, len(str(a)))
-        for q_time in q_times:
-            num = round(q_time, ROUNDING_NUM)
-            q_width = max(q_width, len(str(num)))
-        for op_nums, q_time in sorted_questions:
-            op, *nums = op_nums
-            a = nums[0]
-            print(
-                Fore.BLUE
-                + f"{a:>{width}}"
-                + Fore.YELLOW
-                + f" {op} "
-                + Fore.GREEN
-                + "| "
-                + f"{round(q_time, ROUNDING_NUM):<{q_width}} seconds"
-                + Fore.RESET
-            )
+def print_data(q_log: QuestionLog) -> None:
+    print()
+    q_log.print_data()
 
 
 def again_msg() -> None:

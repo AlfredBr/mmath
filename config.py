@@ -40,7 +40,7 @@ ALL_OPTIONS = {
 }
 
 
-def print_options():
+def print_options() -> None:
     width: int = max(len(v) for v in ALL_OPTIONS)
     for op, desc in ALL_OPTIONS.items():
         print(Fore.YELLOW + f" {op:>{width}}" + Fore.BLUE + f" | {desc}" + Fore.RESET)
@@ -51,9 +51,8 @@ def configure() -> tuple[str, int]:
     operations = ALL_OPERATIONS.keys()
     while True:
         print(
-            Fore.BLUE
-            + f"What do you want to practice? Enter {Fore.YELLOW}l{Fore.BLUE} for options."
-            + Fore.RESET
+            Fore.BLUE + f"What do you want to practice?"
+            f"Enter {Fore.YELLOW}l{Fore.BLUE} for options." + Fore.RESET
         )
         op: str = input(Fore.GREEN + "Operation: " + Fore.RESET).lower().strip()
         quit_check(op)
