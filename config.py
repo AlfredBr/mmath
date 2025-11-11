@@ -1,9 +1,11 @@
 import random
 import statistics
+from collections.abc import Callable
 
 from colorama import Fore
 
 from operations import (
+    QuestionResult,
     addition,
     calendar,
     complex_multiplication,
@@ -50,7 +52,7 @@ ALL_OPTIONS = {
 def print_options() -> None:
     width: int = max(len(v) for v in ALL_OPTIONS)
     for op, desc in ALL_OPTIONS.items():
-        print(Fore.YELLOW + f" {op:>{width}}" + Fore.BLUE + f" | {desc}" + Fore.RESET)
+        print(f"{Fore.YELLOW} {op:>{width}}" + f"{Fore.BLUE} | {desc}{Fore.RESET}")
     print("\n")
 
 
@@ -58,24 +60,24 @@ def configure() -> tuple[str, int]:
     operations = ALL_OPERATIONS.keys()
     while True:
         print(
-            Fore.BLUE + f"What do you want to practice? "
-            f"Enter {Fore.YELLOW}l{Fore.BLUE} for options." + Fore.RESET
+            f"{Fore.BLUE}What do you want to practice? "
+            f"Enter {Fore.YELLOW}l{Fore.BLUE} for options.{Fore.RESET}"
         )
-        op: str = input(Fore.GREEN + "Operation: " + Fore.RESET).lower().strip()
+        op: str = input(f"{Fore.GREEN}Operation: {Fore.RESET}").lower().strip()
         quit_check(op)
         if op == "l":
             print_options()
             continue
         if op in operations:
             break
-        print(Fore.RED + "Invalid input." + Fore.RESET)
-    print(Fore.BLUE + "How many questions?" + Fore.RESET)
-    num_q: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+        print(f"{Fore.RED} Invalid input.{Fore.RESET}")
+    print(f"{Fore.BLUE}How many questions?{Fore.RESET}")
+    num_q: int = get_int(f"{Fore.GREEN}Enter a number: {Fore.RESET}", pos=True)
     return op, num_q
 
 
 # These are the options that are included in the 'custom' setting
-CUSTOM_OPERATIONS = {
+CUSTOM_OPERATIONS: dict[str, Callable[[int], QuestionResult]] = {
     "addition": addition,
     "subtraction": subtraction,
     "multiplication": multiplication,
@@ -86,40 +88,40 @@ CUSTOM_OPERATIONS = {
 }
 
 
-def configure_custom():
+def configure_custom() -> Callable[[], QuestionResult]:
     while True:
-        user_opts: dict[str, int | None] = {}
+        user_opts: dict[str, int] = {}
         for operation in CUSTOM_OPERATIONS:
             top = get_maxes(operation)
             if top:
                 user_opts[operation] = top
         if not user_opts:
-            print(Fore.RED + "Error: please specify at least one maximum." + Fore.RESET)
+            print(f"{Fore.RED}Error: please specify at least one maximum.{Fore.RESET}")
             continue
         break
 
-    def custom() -> int:
+    def custom() -> QuestionResult:
         question = random.choice(list(user_opts.keys()))
-        return CUSTOM_OPERATIONS.get(question)(user_opts[question])
+        return CUSTOM_OPERATIONS[question](user_opts[question])
 
     return custom
 
 
-def configure_times_tables():
-    print(Fore.BLUE + "Which times table do you want to practice?" + Fore.RESET)
-    table_number: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+def configure_times_tables() -> Callable[[int], QuestionResult]:
+    print(f"{Fore.BLUE}Which times table do you want to practice?{Fore.RESET}")
+    table_number: int = get_int(f"{Fore.GREEN}Enter a number: {Fore.RESET}", pos=True)
 
-    def inner(top: int) -> tuple[int, float, tuple[str, int, int]]:
+    def inner(top: int) -> QuestionResult:
         return times_tables(top, table_number)
 
     return inner
 
 
-def configure_powers():
-    print(Fore.BLUE + "Which base number do you want to practice?" + Fore.RESET)
-    base: int = get_int(Fore.GREEN + "Enter a number: " + Fore.RESET, pos=True)
+def configure_powers() -> Callable[[int], QuestionResult]:
+    print(f"{Fore.BLUE}Which base number do you want to practice?{Fore.RESET}")
+    base: int = get_int(f"{Fore.GREEN}Enter a number: {Fore.RESET}", pos=True)
 
-    def inner(top: int) -> tuple[int, float, tuple[str, int, int]]:
+    def inner(top: int) -> QuestionResult:
         return powers(top, base)
 
     return inner
@@ -129,81 +131,49 @@ def print_summary(
     num_q: int, errors: int, start_round: float, end_round: float, q_times: list[float]
 ) -> None:
     print(
-        Fore.BLUE
-        + "Solved "
-        + Fore.YELLOW
-        + f"{num_q}"
-        + Fore.BLUE
-        + " problems in "
-        + Fore.YELLOW
-        + f"{round(end_round - start_round, ROUNDING_NUM)}"
-        + Fore.BLUE
-        + " seconds with "
-        + Fore.YELLOW
-        + f"{errors}"
-        + Fore.BLUE
-        + f" {'error' if errors == 1 else 'errors'}.\n"
-        + Fore.RESET
+        f"{Fore.BLUE}Solved "
+        f"{Fore.YELLOW}{num_q}"
+        f"{Fore.BLUE} problems in "
+        f"{Fore.YELLOW}{round(end_round - start_round, ROUNDING_NUM)}"
+        f"{Fore.BLUE} seconds with "
+        f"{Fore.YELLOW}{errors}"
+        f"{Fore.BLUE} {'error' if errors == 1 else 'errors'}.\n{Fore.RESET}"
     )
     width: int = 20
     print(
-        Fore.BLUE
-        + f"{'Average time:':<{width}}"
-        + Fore.YELLOW
-        + f"{round(statistics.mean(q_times), ROUNDING_NUM)}"
-        + Fore.BLUE
-        + " seconds"
-        + Fore.RESET
+        f"{Fore.BLUE}{'Average time:':<{width}}"
+        f"{Fore.YELLOW}{round(statistics.mean(q_times), ROUNDING_NUM)}"
+        f"{Fore.BLUE} seconds{Fore.RESET}"
     )
     if len(q_times) > 1:
         print(
-            Fore.BLUE
-            + f"{'Standard deviation:':<{width}}"
-            + Fore.YELLOW
-            + f"{round(statistics.stdev(q_times), ROUNDING_NUM):<4}"
-            + Fore.BLUE
-            + " seconds"
-            + Fore.RESET
+            f"{Fore.BLUE}{'Standard deviation:':<{width}}"
+            f"{Fore.YELLOW}{round(statistics.stdev(q_times), ROUNDING_NUM):<4}"
+            f"{Fore.BLUE} seconds{Fore.RESET}"
         )
         print(
-            Fore.BLUE
-            + f"{'Median time:':<{width}}"
-            + Fore.YELLOW
-            + f"{round(statistics.median(q_times), ROUNDING_NUM):<4}"
-            + Fore.BLUE
-            + " seconds"
-            + Fore.RESET
+            f"{Fore.BLUE}{'Median time:':<{width}}"
+            f"{Fore.YELLOW}{round(statistics.median(q_times), ROUNDING_NUM):<4}"
+            f"{Fore.BLUE} seconds{Fore.RESET}"
         )
         print(
-            Fore.BLUE
-            + f"{'Shortest time:':<{width}}"
-            + Fore.YELLOW
-            + f"{round(min(q_times), ROUNDING_NUM):<4}"
-            + Fore.BLUE
-            + " seconds"
-            + Fore.RESET
+            f"{Fore.BLUE}{'Shortest time:':<{width}}"
+            f"{Fore.YELLOW}{round(min(q_times), ROUNDING_NUM):<4}"
+            f"{Fore.BLUE} seconds{Fore.RESET}"
         )
         print(
-            Fore.BLUE
-            + f"{'Longest time:':<{width}}"
-            + Fore.YELLOW
-            + f"{round(max(q_times), ROUNDING_NUM):<4}"
-            + Fore.BLUE
-            + " seconds"
-            + Fore.RESET
+            f"{Fore.BLUE}{'Longest time:':<{width}}"
+            f"{Fore.YELLOW}{round(max(q_times), ROUNDING_NUM):<4}"
+            f"{Fore.BLUE} seconds{Fore.RESET}"
         )
         print(
-            Fore.BLUE
-            + f"{'Range:':<{width}}"
-            + Fore.YELLOW
-            + f"{round(max(q_times) - min(q_times), ROUNDING_NUM):<4}"
-            + Fore.BLUE
-            + " seconds\n"
-            + Fore.RESET
+            f"{Fore.BLUE}{'Range:':<{width}}"
+            f"{Fore.YELLOW}{round(max(q_times) - min(q_times), ROUNDING_NUM):<4}"
+            f"{Fore.BLUE} seconds\n{Fore.RESET}"
         )
 
 
-ALL_OPERATIONS = {
+ALL_OPERATIONS: dict[str, Callable[..., QuestionResult]] = {
     "+": addition,
     "-": subtraction,
     "+/-": plus_minus,
