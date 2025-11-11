@@ -51,7 +51,7 @@ def configure() -> tuple[str, int]:
     operations = ALL_OPERATIONS.keys()
     while True:
         print(
-            Fore.BLUE + f"What do you want to practice?"
+            Fore.BLUE + f"What do you want to practice? "
             f"Enter {Fore.YELLOW}l{Fore.BLUE} for options." + Fore.RESET
         )
         op: str = input(Fore.GREEN + "Operation: " + Fore.RESET).lower().strip()
