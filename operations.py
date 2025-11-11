@@ -1,11 +1,12 @@
+import datetime
 import random
 import time
 from math import floor, sqrt
-import datetime
+from dataclasses import dataclass
 
 from colorama import Fore
 
-from utils import get_expr, get_int, quit_check, get_day
+from utils import get_day, get_expr, get_int, quit_check
 
 ##################################################################################################
 # These should all be functions that take a single input,
@@ -18,6 +19,13 @@ from utils import get_expr, get_int, quit_check, get_day
 #
 # Be sure to add new functions to the ALL_OPERATIONS dictionary in config.py
 ##################################################################################################
+
+
+@dataclass
+class QuestionResult:
+    num_wrong: int
+    question_time: float
+    question_info: tuple[str, str, str] | tuple[str, str]
 
 
 def addition(top: int) -> tuple[int, float, tuple[str, int, int]]:
@@ -162,9 +170,8 @@ def squareroot(top: int) -> tuple[int, float, tuple[str, int]]:
         ans = get_expr(f"sqrt({a}) = ")
     q_time: float = time.time() - start
     print()
-    print(
-        f"{Fore.BLUE}{'Newton\'s method approximation:':<30} {Fore.YELLOW}{best_answer}{Fore.RESET}"
-    )
+    label = "Newton's method approximation:"
+    print(f"{Fore.BLUE}{label:<30} {Fore.YELLOW}{best_answer}{Fore.RESET}")
     print(f"{Fore.BLUE}{'Range:':<30} {Fore.YELLOW}{correct_range}{Fore.RESET}")
     print(f"{Fore.BLUE}{'Actual:':<30} {Fore.YELLOW}{true_root}{Fore.RESET}")
     print(

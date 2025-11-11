@@ -36,19 +36,18 @@ class QuestionLog:
             self.log.items(), key=lambda item: item[1]["time"], reverse=True
         )
         number_data = [item[0] for item in sorted_questions]
+
         q_times = [item[1]["time"] for item in sorted_questions]
+        q_width: int = max(len(str(round(x, ROUNDING_NUM))) for x in q_times)
+
         l_width: int = 0
         r_width: int = 0
-        q_width: int = 0
         op_width: int = 0
         for data in number_data:
-            op_width = max(op_width, len(data[0]))
             l_width = max(l_width, len(str(data[1])))
+            op_width = max(op_width, len(data[0]))
             if len(data) == 3:
                 r_width = max(r_width, len(str(data[2])))
-        for q_time in q_times:
-            num = round(q_time, ROUNDING_NUM)
-            q_width = max(q_width, len(str(num)))
         for op_nums, result_dict in sorted_questions:
             op, *nums = op_nums
             a = nums[0]
