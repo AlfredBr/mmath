@@ -38,6 +38,12 @@ def quit_check(check: str) -> None:
         raise RestartProgram
 
 
+def get_str(message: str = "") -> str:
+    user_input = input(message).lower().strip()
+    quit_check(user_input)
+    return user_input
+
+
 def get_maxes(operation: str) -> int | None:
     while True:
         user_input = (
@@ -84,7 +90,7 @@ def get_float(message: str) -> float:
     return num
 
 
-def get_int(message: str, pos: bool = False) -> int:
+def get_int(message: str, pos: bool = False) -> int:  # noqa: FBT001, FBT002
     while True:
         user_input = input(message).lower().strip()
         quit_check(user_input)
@@ -136,7 +142,7 @@ def get_day(message: str) -> int:
             return days[user_input]
         try:
             num: int = int(user_input)
-            if num < 0 or num > 6:
+            if num < 0 or num > 6:  # noqa: PLR2004
                 print(
                     f"{Fore.RED}Please enter a number 0-6, "
                     f"or a day of the week.{Fore.RESET}"
@@ -146,3 +152,21 @@ def get_day(message: str) -> int:
         except ValueError:
             print(f"{Fore.RED}Invalid input.{Fore.RESET}")
     return num
+
+
+def enter_to_cont() -> None:
+    q: str = (
+        input(
+            f"{Fore.CYAN}Press {Fore.YELLOW}Enter{Fore.CYAN} "
+            f"to continue...\n{Fore.RESET}"
+        )
+        .strip()
+        .lower()
+    )
+    quit_check(q)
+
+
+def in_bounds(test: float, lower: float, upper: float, include: bool) -> bool:  # noqa: FBT001
+    if include:
+        return test >= lower and test <= upper
+    return test > lower and test < upper

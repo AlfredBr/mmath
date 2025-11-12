@@ -16,14 +16,16 @@ from operations import QuestionResult
 from utils import (
     RestartProgram,
     get_int,
+    get_str,
     print_ui,
-    quit_check,
 )
 
 
 class QuestionLog:
     def __init__(self) -> None:
-        self.log = {}
+        self.log: dict[
+            tuple[str, str] | tuple[str, str, str], dict[str, float | int]
+        ] = {}
 
     def update(self, data: QuestionResult) -> None:
         if data.question_info in self.log:
@@ -51,12 +53,12 @@ class QuestionLog:
         for data in number_data:
             l_width = max(l_width, len(str(data[1])))
             op_width = max(op_width, len(data[0]))
-            if len(data) == 3:
+            if len(data) >= 3:  # noqa: PLR2004
                 r_width = max(r_width, len(str(data[2])))
         for op_nums, result_dict in sorted_questions:
             op, *nums = op_nums
             a = nums[0]
-            b = nums[1] if len(nums) == 2 else ""
+            b = nums[1] if len(nums) == 2 else ""  # noqa: PLR2004
             print(
                 f"{Fore.BLUE}{a:>{l_width}}"
                 f"{Fore.YELLOW} {op:^{op_width}} "
@@ -98,11 +100,6 @@ def play_round(
     return question_log
 
 
-def print_data(q_log: QuestionLog) -> None:
-    print()
-    q_log.print_data()
-
-
 def again_msg() -> None:
     print(
         "\n"
@@ -124,14 +121,14 @@ def main_loop(
         question_log = play_round(trial, num_q, *args)
         while True:
             again_msg()
-            again = input().lower().strip()
-            quit_check(again)
+            again = get_str()
             if again == "y":
                 break
             if again == "n":
                 return
             if again == "d":
-                print_data(question_log)
+                print()
+                question_log.print_data()
             else:
                 print(f"{Fore.RED}Invalid input.{Fore.RESET}")
 

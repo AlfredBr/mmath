@@ -9,50 +9,65 @@ from operations import (
     addition,
     calendar,
     complex_multiplication,
+    conversions,
     default,
+    distance_conv,
     division,
+    frac_add,
+    frac_mult,
+    fraction_all,
+    modular,
     multiplication,
     perfect_square,
     plus_minus,
+    pounds_kg,
     powers,
     square,
     squareroot,
     subtraction,
+    temp_conv,
     times_tables,
+    tip,
 )
-from utils import get_int, get_maxes, quit_check
+from utils import get_int, get_maxes, get_str
 
 ROUNDING_NUM: int = 2
 
 
 # Used to list options, be sure to see ALL_OPERATIONS at the bottom of this file
-ALL_OPTIONS = {
-    "+": "addition",
-    "-": "subtraction",
-    "+/-": "addition and subtraction",
-    "pm": "addition and subtraction",
-    "+-": "addition and subtraction",
-    "*": "multiplication",
-    "complex": "complex multiplication",
-    "/": "division with remainder",
-    "^2": "square",
-    "sq": "square",
-    "pow": "powers of a specified base",
-    "sqrt": "square root",
-    "psq": "square roots of perfect squares",
-    "times tables": "times tables",
-    "tt": "alias for times tables",
-    "cal": "find day of the week",
-    "custom": "configure custom session",
-    "default": "3 digit addition/subtraction, 2 digit multiplication, "
+ALL_OPTIONS: dict[tuple[str, ...], str] = {
+    ("+",): "addition",
+    ("-",): "subtraction",
+    ("+/-", "pm", "+-"): "addition and subtraction",
+    ("f+",): "fraction addition",
+    ("f*",): "fraction multiplication",
+    ("frac",): "fraction addition and multiplication",
+    ("*",): "multiplication",
+    ("complex",): "complex multiplication",
+    ("/",): "division with remainder",
+    ("mod",): "mod function",
+    ("^2", "sq"): "square",
+    ("pow",): "powers of a specified base",
+    ("sqrt",): "square root",
+    ("psq",): "identify perfect squares",
+    ("times tables", "tt"): "times tables",
+    ("cal",): "find day of the week",
+    ("dist",): "convert between miles and km",
+    ("temp",): "convert between Fahrenheit and Celsius",
+    ("weight",): "convert between pounds and kilograms",
+    ("conv",): "all conversions",
+    ("tip",): "calculate tips on a bill",
+    ("custom",): "configure custom session",
+    ("default",): "3 digit addition/subtraction, 2 digit multiplication, "
     "3 digit division, 2 digit squaring/square root",
 }
 
 
 def print_options() -> None:
-    width: int = max(len(v) for v in ALL_OPTIONS)
+    width: int = max(len(", ".join(v)) for v in ALL_OPTIONS)
     for op, desc in ALL_OPTIONS.items():
-        print(f"{Fore.YELLOW} {op:>{width}}" + f"{Fore.BLUE} | {desc}{Fore.RESET}")
+        aliases: str = ", ".join(op)
+        print(f"{Fore.YELLOW} {aliases:>{width}}" + f"{Fore.BLUE} | {desc}{Fore.RESET}")
     print("\n")
 
 
@@ -63,8 +78,7 @@ def configure() -> tuple[str, int]:
             f"{Fore.BLUE}What do you want to practice? "
             f"Enter {Fore.YELLOW}l{Fore.BLUE} for options.{Fore.RESET}"
         )
-        op: str = input(f"{Fore.GREEN}Operation: {Fore.RESET}").lower().strip()
-        quit_check(op)
+        op: str = get_str(f"{Fore.GREEN}Operation: {Fore.RESET}").lower().strip()
         if op == "l":
             print_options()
             continue
@@ -85,6 +99,12 @@ CUSTOM_OPERATIONS: dict[str, Callable[[int], QuestionResult]] = {
     "division": division,
     "square": square,
     "square root": squareroot,
+    "fraction addition": frac_add,
+    "fraction multiplication": frac_mult,
+    "distance conversion": distance_conv,
+    "temperature conversion": temp_conv,
+    "weight conversion": pounds_kg,
+    "tip calculation": tip,
 }
 
 
@@ -139,38 +159,22 @@ def print_summary(
         f"{Fore.YELLOW}{errors}"
         f"{Fore.BLUE} {'error' if errors == 1 else 'errors'}.\n{Fore.RESET}"
     )
-    width: int = 20
-    print(
-        f"{Fore.BLUE}{'Average time:':<{width}}"
-        f"{Fore.YELLOW}{round(statistics.mean(q_times), ROUNDING_NUM)}"
-        f"{Fore.BLUE} seconds{Fore.RESET}"
-    )
     if len(q_times) > 1:
-        print(
-            f"{Fore.BLUE}{'Standard deviation:':<{width}}"
-            f"{Fore.YELLOW}{round(statistics.stdev(q_times), ROUNDING_NUM):<4}"
-            f"{Fore.BLUE} seconds{Fore.RESET}"
-        )
-        print(
-            f"{Fore.BLUE}{'Median time:':<{width}}"
-            f"{Fore.YELLOW}{round(statistics.median(q_times), ROUNDING_NUM):<4}"
-            f"{Fore.BLUE} seconds{Fore.RESET}"
-        )
-        print(
-            f"{Fore.BLUE}{'Shortest time:':<{width}}"
-            f"{Fore.YELLOW}{round(min(q_times), ROUNDING_NUM):<4}"
-            f"{Fore.BLUE} seconds{Fore.RESET}"
-        )
-        print(
-            f"{Fore.BLUE}{'Longest time:':<{width}}"
-            f"{Fore.YELLOW}{round(max(q_times), ROUNDING_NUM):<4}"
-            f"{Fore.BLUE} seconds{Fore.RESET}"
-        )
-        print(
-            f"{Fore.BLUE}{'Range:':<{width}}"
-            f"{Fore.YELLOW}{round(max(q_times) - min(q_times), ROUNDING_NUM):<4}"
-            f"{Fore.BLUE} seconds\n{Fore.RESET}"
-        )
+        stats: dict[str, float] = {
+            "Average time:": round(statistics.mean(q_times), ROUNDING_NUM),
+            "Standard deviation:": round(statistics.stdev(q_times), ROUNDING_NUM),
+            "Median time:": round(statistics.median(q_times), ROUNDING_NUM),
+            "Shortest time:": round(min(q_times), ROUNDING_NUM),
+            "Longest time:": round(max(q_times), ROUNDING_NUM),
+            "Range:": round(max(q_times) - min(q_times), ROUNDING_NUM),
+        }
+        l_width = max(map(len, stats.keys())) + 1  # + 1 so there is a space after
+        num_width = max(len(str(x)) for x in stats.values())
+        for desc, val in stats.items():
+            print(
+                f"{Fore.BLUE}{desc:<{l_width}}"
+                f"{Fore.YELLOW}{val:<{num_width}}{Fore.BLUE} seconds{Fore.RESET}"
+            )
 
 
 ALL_OPERATIONS: dict[str, Callable[..., QuestionResult]] = {
@@ -180,8 +184,12 @@ ALL_OPERATIONS: dict[str, Callable[..., QuestionResult]] = {
     "pm": plus_minus,
     "+-": plus_minus,
     "*": multiplication,
+    "f+": frac_add,
+    "f*": frac_mult,
+    "frac": fraction_all,
     "complex": complex_multiplication,
     "/": division,
+    "mod": modular,
     "^2": square,
     "sq": square,
     "pow": powers,
@@ -190,6 +198,11 @@ ALL_OPERATIONS: dict[str, Callable[..., QuestionResult]] = {
     "times tables": times_tables,
     "tt": times_tables,
     "cal": calendar,
-    "custom": configure_custom,
+    "dist": distance_conv,
+    "temp": temp_conv,
+    "weight": pounds_kg,
+    "conv": conversions,
+    "tip": tip,
     "default": default(),
+    "custom": configure_custom,
 }

@@ -3,11 +3,19 @@ import random
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from math import floor, sqrt
+from math import ceil, floor, gcd, sqrt
+from typing import Any
 
 from colorama import Fore
 
-from utils import get_day, get_expr, get_int, quit_check
+from utils import (
+    enter_to_cont,
+    get_day,
+    get_expr,
+    get_float,
+    get_int,
+    in_bounds,
+)
 
 ##################################################################################################
 # These should all be functions that take a single input,
@@ -21,6 +29,13 @@ from utils import get_day, get_expr, get_int, quit_check
 ##################################################################################################
 
 
+###########################################################
+# defines how close a guess has to be for a correct answer
+# a value of 0.01 means that an answer has to be within 1%
+# of the right answer to be correct
+TOLERANCE: float = 0.01
+
+
 @dataclass
 class QuestionResult:
     num_wrong: int
@@ -31,6 +46,14 @@ class QuestionResult:
 def wrong() -> int:
     print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
     return 1
+
+
+def print_ticket(ticket: dict[str, Any]) -> None:
+    width: int = max(map(len, ticket.keys()))
+    print()
+    for msg, num in ticket.items():
+        print(f"{Fore.BLUE}{msg:<{width}}{Fore.YELLOW}{num}")
+    enter_to_cont()
 
 
 def addition(top: int) -> QuestionResult:
@@ -131,6 +154,19 @@ def division(top: int) -> QuestionResult:
     return QuestionResult(num_wrong, q_time, ("/", str(dividend), str(divisor)))
 
 
+def modular(top: int) -> QuestionResult:
+    num_wrong: int = 0
+    a: int = random.randint(1, top)
+    m: int = random.randint(1, max(floor(a / DIVISOR_MAX), 1))
+    start: float = time.time()
+    ans = get_int(f"{a} mod {m} = ")
+    while ans != a % m:
+        num_wrong += wrong()
+        ans = get_int(f"{a} mod {m} = ")
+    q_time: float = time.time() - start
+    return QuestionResult(num_wrong, q_time, ("mod", str(a), str(m)))
+
+
 def square(top: int) -> QuestionResult:
     num_wrong: int = 0
     a: int = random.randint(1, top)
@@ -141,13 +177,6 @@ def square(top: int) -> QuestionResult:
         ans = get_int(f"{a}^2 = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("^", str(a), "2"))
-
-
-######################################################
-# defines how close a guess has to be for squareroot()
-# a value of 0.01 means that an answer has to be within 1%
-# of the true root to be correct
-TOLERANCE: float = 0.01
 
 
 def squareroot(top: int) -> QuestionResult:
@@ -163,23 +192,17 @@ def squareroot(top: int) -> QuestionResult:
     )
     start: float = time.time()
     ans: float = get_expr(f"sqrt({a}) = ")
-    while (ans < correct_range[0]) or (ans > correct_range[1]):
+    while not in_bounds(ans, correct_range[0], correct_range[1], include=True):
         num_wrong += wrong()
         ans = get_expr(f"sqrt({a}) = ")
     q_time: float = time.time() - start
-    print()
-    label = "Newton's method approximation:"
-    print(f"{Fore.BLUE}{label:<30} {Fore.YELLOW}{best_answer}{Fore.RESET}")
-    print(f"{Fore.BLUE}{'Range:':<30} {Fore.YELLOW}{correct_range}{Fore.RESET}")
-    print(f"{Fore.BLUE}{'Actual:':<30} {Fore.YELLOW}{true_root}{Fore.RESET}")
-    print(
-        f"{Fore.BLUE}{'Difference:':<30} "
-        f"{Fore.YELLOW}{abs(best_answer - true_root)}{Fore.RESET}"
-    )
-    q: str = (
-        input(f"{Fore.GREEN}Press enter to continue...\n{Fore.RESET}").strip().lower()
-    )
-    quit_check(q)
+    ticket: dict[str, float | tuple] = {
+        "Newton's method approximation: ": best_answer,
+        "Actual: ": true_root,
+        "Difference: ": best_answer - true_root,
+        "Accepted Range: ": correct_range,
+    }
+    print_ticket(ticket)
     return QuestionResult(num_wrong, q_time, ("sqrt", str(a)))
 
 
@@ -255,6 +278,217 @@ def calendar() -> QuestionResult:
     ans: int = get_day(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
     while ans != ((a.weekday() + 1) % 7):
         num_wrong += wrong()
-        ans = get_int(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
+        ans = get_day(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("cal", a.strftime("%B %d, %Y")))
+
+
+# rounding num for the printed range in conv
+ROUND_NUM: int = 6
+
+
+def distance_conv(top: int) -> QuestionResult:
+    if random.random() < 0.5:
+        orig: str = "miles"
+        orig_short: str = "mi"
+        to: str = "kilometers"
+        to_short: str = "km"
+        ratio: float = 1.609344
+        approx: float = 1.6
+    else:
+        orig: str = "kilometers"
+        orig_short: str = "km"
+        to: str = "miles"
+        to_short: str = "mi"
+        ratio: float = 0.621371
+        approx: float = 0.625
+    num_wrong: int = 0
+    a = random.randint(1, top)
+    start: float = time.time()
+    correct: float = ratio * a
+    closest_integer: int = round(correct)
+    tol = TOLERANCE * correct
+    lower_bound: int = floor(min([correct - tol, closest_integer, a * approx]))
+    upper_bound: int = ceil(max([correct + tol, closest_integer, a * approx]))
+    print(f"{a} {orig}")
+    ans: float = get_float(f"{to.capitalize()}: ")
+    while not in_bounds(ans, lower_bound, upper_bound, include=True):
+        num_wrong += wrong()
+        print(f"{a} {orig}")
+        ans: float = get_float(f"{to.capitalize()}: ")
+    q_time: float = time.time() - start
+    ticket: dict[str, float | str] = {
+        "Exact: ": round(ratio * a, ROUND_NUM),
+        "You were off by ": round(abs(ans - correct), ROUND_NUM),
+        "1.6 approximation: ": round(a * approx, ROUND_NUM),
+        "Closest integer: ": closest_integer,
+        # "Accepted range: ": f"{(lower_bound, upper_bound)}",
+    }
+    print_ticket(ticket)
+    return QuestionResult(num_wrong, q_time, (f"{orig_short} -> {to_short}", f"{a}"))
+
+
+def temp_conv(top: int) -> QuestionResult:
+    if random.random() < 0.5:  # noqa: PLR2004
+        orig: str = "Fahrenheit"
+        orig_short: str = "F"
+        to: str = "Celsius"
+        to_short: str = "C"
+        conversion = lambda x: (x - 32) * (5 / 9)
+        approx = lambda x: (x - 30) / 2
+    else:
+        orig: str = "Celsius"
+        orig_short: str = "C"
+        to: str = "Fahrenheit"
+        to_short: str = "F"
+        conversion = lambda x: x * 1.8 + 32
+        approx = lambda x: x * 2 + 30
+    num_wrong: int = 0
+    a = random.randint(1, top)
+    start: float = time.time()
+    correct: float = conversion(a)
+    tol: float = correct * TOLERANCE
+    closest_integer: int = round(correct)
+    print(f"{a}° {orig}")
+    ans: float = get_float(f"{to.capitalize()}: ")
+    lower_bound: int = floor(min(correct - tol, approx(a), closest_integer))
+    upper_bound: int = ceil(max(correct + tol, approx(a), closest_integer))
+    while not in_bounds(ans, lower_bound, upper_bound, include=True):
+        num_wrong += wrong()
+        print(f"{a}° {orig}")
+        ans: float = get_float(f"{to.capitalize()}: ")
+    q_time: float = time.time() - start
+    ticket: dict[str, float] = {
+        "Exact: ": round(conversion(a), ROUND_NUM),
+        "You were off by ": round(abs(ans - correct), ROUND_NUM),
+        "Approximation: ": round(approx(a), ROUND_NUM),
+        "Closest integer: ": round(closest_integer, ROUND_NUM),
+    }
+    print_ticket(ticket)
+    return QuestionResult(num_wrong, q_time, (f"{orig_short} -> {to_short}", f"{a}"))
+
+
+def pounds_kg(top: int) -> QuestionResult:
+    num_wrong: int = 1
+    if random.random() < 0.5:  # noqa: PLR2004
+        orig: str = "pounds"
+        orig_short: str = "lb"
+        to: str = "kilograms"
+        to_short: str = "kg"
+        conversion = lambda x: x * 0.45359237
+        approx = lambda x: x * 0.45
+    else:
+        orig: str = "kilograms"
+        orig_short: str = "kg"
+        to: str = "pounds"
+        to_short: str = "lb"
+        conversion = lambda x: x * 2.20462
+        approx = lambda x: x * 2.2
+    a = random.randint(1, top)
+    start: float = time.time()
+    correct: float = conversion(a)
+    closest_integer: int = round(correct)
+    tol = TOLERANCE * correct
+    print(f"{a} {orig}")
+    ans: float = get_float(f"{to.capitalize()}: ")
+    lower_bound: int = floor(min(correct - tol, approx(a), closest_integer))
+    upper_bound: int = ceil(max(correct + tol, approx(a), closest_integer))
+    while not in_bounds(ans, lower_bound, upper_bound, include=True):
+        num_wrong += wrong()
+        print(f"{a} {orig}")
+        ans: float = get_float(f"{to.capitalize()}: ")
+    q_time: float = time.time() - start
+    ticket: dict[str, float] = {
+        "Exact: ": round(conversion(a), ROUND_NUM),
+        "You were off by ": round(abs(ans - correct), ROUND_NUM),
+        "Approximation: ": round(approx(a), ROUND_NUM),
+        "Closest integer: ": closest_integer,
+    }
+    print_ticket(ticket)
+    return QuestionResult(num_wrong, q_time, (f"{orig_short} -> {to_short}", f"{a}"))
+
+
+def conversions(top: int) -> QuestionResult:
+    trial = random.choice([temp_conv, pounds_kg, distance_conv])
+    return trial(top)
+
+
+def tip(top: int) -> QuestionResult:
+    num_wrong: int = 0
+    bill: float = round(random.randint(0, top * 100) / 100, 2)
+    tips: list[int] = [5, 10, 15, 18, 20, 25]
+    tip = round(random.choice(tips), 2)
+    tip_amount: float = (tip / 100) * bill
+    total_amount: float = bill + tip_amount
+    start: float = time.time()
+    print(f"{tip}% tip on ${bill} is")
+    tip_amount_ans: float = get_float("Tip: ")
+    total_ans: float = get_float("Total: ")
+    # checks if the answer is within +- a cent of the correct answer,
+    # to account for rounding differences
+    while not in_bounds(
+        tip_amount_ans, tip_amount - 0.01, tip_amount + 0.01, include=True
+    ) and not in_bounds(
+        total_ans, total_amount - 0.01, total_amount + 0.01, include=True
+    ):
+        num_wrong += wrong()
+        tip_amount_ans = get_float("Tip: ")
+        total_ans = get_float("Total: ")
+    q_time: float = time.time() - start
+    return QuestionResult(num_wrong, q_time, ("%", str(tip), str(bill)))
+
+
+def simplify_fraction(num: int, denom: int) -> tuple[int, int]:
+    common_factor = gcd(num, denom)
+    if common_factor == 0:
+        return (0, 0)
+    return (num // common_factor, denom // common_factor)
+
+
+def frac_add(top: int) -> QuestionResult:
+    num_wrong: int = 0
+    a: int = random.randint(1, top)
+    b: int = random.randint(1, top)
+    c: int = random.randint(1, top)
+    d: int = random.randint(1, top)
+    if random.random() < 0.5:  # noqa: PLR2004
+        op: str = "+"
+        correct_num, correct_denom = simplify_fraction(a * d + b * c, b * d)
+    else:
+        op: str = "-"
+        correct_num, correct_denom = simplify_fraction(a * d - b * c, b * d)
+    start: float = time.time()
+    print(f"{a}/{b} + {c}/{d}")
+    num_ans: int = get_int("Numerator: ")
+    denom_ans: int = get_int("Denominator: ")
+    while num_ans != correct_num and denom_ans != correct_denom:
+        num_wrong += wrong()
+        num_ans: int = get_int("Numerator: ")
+        denom_ans: int = get_int("Denominator: ")
+    q_time: float = time.time() - start
+    return QuestionResult(num_wrong, q_time, (op, f"{a}/{b}", f"{c}/{d}"))
+
+
+def frac_mult(top: int) -> QuestionResult:
+    num_wrong: int = 0
+    a: int = random.randint(1, top)
+    b: int = random.randint(1, top)
+    c: int = random.randint(1, top)
+    d: int = random.randint(1, top)
+    correct_num, correct_denom = simplify_fraction(a * c, b * d)
+    start: float = time.time()
+    print(f"{a}/{b} * {c}/{d}")
+    num_ans: int = get_int("Numerator: ")
+    denom_ans: int = get_int("Denominator: ")
+    while num_ans != correct_num and denom_ans != correct_denom:
+        num_wrong += wrong()
+        num_ans: int = get_int("Numerator: ")
+        denom_ans: int = get_int("Denominator: ")
+    q_time: float = time.time() - start
+    return QuestionResult(num_wrong, q_time, ("*", f"{a}/{b}", f"{c}/{d}"))
+
+
+def fraction_all(top: int) -> QuestionResult:
+    if random.random() < 0.5:  # noqa: PLR2004
+        return frac_add(top)
+    return frac_mult(top)
