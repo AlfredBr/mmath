@@ -43,6 +43,9 @@ class QuestionResult:
     question_info: tuple[str, str, str] | tuple[str, str]
 
 
+correct = f"{Fore.GREEN}--   correct --{Fore.RESET}"
+
+
 def wrong() -> int:
     print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
     return 1
@@ -416,25 +419,30 @@ def conversions(top: int) -> QuestionResult:
 def tip(top: int) -> QuestionResult:
     num_wrong: int = 0
     bill: float = round(random.randint(0, top * 100) / 100, 2)
-    tips: list[int] = [5, 10, 15, 18, 20, 25]
+    tips: list[int] = [5, 10, 15, 20, 25]
     tip = round(random.choice(tips), 2)
     tip_amount: float = (tip / 100) * bill
-    total_amount: float = bill + tip_amount
     start: float = time.time()
     print(f"{tip}% tip on ${bill:.2f} is")
-    tip_amount_ans: float = get_float("Tip: ")
-    total_ans: float = get_float("Total: ")
-    # checks if the answer is within +- a cent of the correct answer,
+    tip_amount_ans: float = get_float("Tip:   $")
+    # checks if the answer is within +- 3 cents of the correct answer,
     # to account for rounding differences
     while not in_bounds(
-        tip_amount_ans, tip_amount - 0.01, tip_amount + 0.01, include=True
-    ) and not in_bounds(
-        total_ans, total_amount - 0.01, total_amount + 0.01, include=True
+        tip_amount_ans, tip_amount - 0.03, tip_amount + 0.03, include=True
     ):
         num_wrong += wrong()
         print(f"{tip}% tip on ${bill:.2f} is")
-        tip_amount_ans = get_float("Tip: ")
-        total_ans = get_float("Total: ")
+        tip_amount_ans: float = get_float("Tip:   $")
+    print(correct)
+    total_ans: float = get_float("Total: $")
+    total_amount: float = bill + tip_amount_ans
+    while not in_bounds(
+        total_ans, total_amount - 0.03, total_amount + 0.03, include=True
+    ):
+        num_wrong += wrong()
+        print(f"{tip}% tip on ${bill:.2f} is")
+        print(f"Tip:   ${tip_amount_ans}")
+        total_ans: float = get_float("Total: $")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("%", str(tip), str(bill)))
 
