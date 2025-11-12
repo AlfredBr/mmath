@@ -421,7 +421,7 @@ def tip(top: int) -> QuestionResult:
     tip_amount: float = (tip / 100) * bill
     total_amount: float = bill + tip_amount
     start: float = time.time()
-    print(f"{tip}% tip on ${bill} is")
+    print(f"{tip}% tip on ${bill:.2f} is")
     tip_amount_ans: float = get_float("Tip: ")
     total_ans: float = get_float("Total: ")
     # checks if the answer is within +- a cent of the correct answer,
@@ -432,6 +432,7 @@ def tip(top: int) -> QuestionResult:
         total_ans, total_amount - 0.01, total_amount + 0.01, include=True
     ):
         num_wrong += wrong()
+        print(f"{tip}% tip on ${bill:.2f} is")
         tip_amount_ans = get_float("Tip: ")
         total_ans = get_float("Total: ")
     q_time: float = time.time() - start
