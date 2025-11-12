@@ -28,6 +28,11 @@ class QuestionResult:
     question_info: tuple[str, str, str] | tuple[str, str]
 
 
+def wrong() -> int:
+    print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
+    return 1
+
+
 def addition(top: int) -> QuestionResult:
     num_wrong: int = 0
     a: int = random.randint(1, top)
@@ -35,8 +40,7 @@ def addition(top: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{a} + {b} = ")
     while ans != (a + b):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{a} + {b} = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("+", str(a), str(b)))
@@ -49,8 +53,7 @@ def subtraction(top: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{a} - {b} = ")
     while ans != (a - b):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{a} - {b} = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("-", str(a), str(b)))
@@ -69,8 +72,7 @@ def multiplication(top: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{a} * {b} = ")
     while ans != (a * b):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{a} * {b} = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("*", str(a), str(b)))
@@ -88,8 +90,7 @@ def times_tables(top: int, num: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{a} * {b} = ", pos=True)
     while ans != (a * b):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{a} * {b} = ", pos=True)
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("*", str(num), str(other_num)))
@@ -101,8 +102,7 @@ def powers(top: int, base: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{base}^{exponent} = ", pos=True)
     while ans != (base**exponent):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{base}^{exponent} = ", pos=True)
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("^", str(base), str(exponent)))
@@ -123,8 +123,7 @@ def division(top: int) -> QuestionResult:
     quotient: int = get_int("Quotient = ")
     remainder: int = get_int("Remainder = ")
     while (quotient, remainder) != divmod(dividend, divisor):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         print(f"{dividend} / {divisor} = ")
         quotient = get_int("Quotient = ")
         remainder = get_int("Remainder = ")
@@ -138,8 +137,7 @@ def square(top: int) -> QuestionResult:
     start: float = time.time()
     ans: int = get_int(f"{a}^2 = ")
     while int(ans) != (a**2):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"{a}^2 = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("^", str(a), "2"))
@@ -166,8 +164,7 @@ def squareroot(top: int) -> QuestionResult:
     start: float = time.time()
     ans: float = get_expr(f"sqrt({a}) = ")
     while (ans < correct_range[0]) or (ans > correct_range[1]):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_expr(f"sqrt({a}) = ")
     q_time: float = time.time() - start
     print()
@@ -193,8 +190,7 @@ def perfect_square(top: int) -> QuestionResult:
     start: float = time.time()
     ans: float = get_int(f"sqrt({a**2}) = ")
     while ans != a:
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_expr(f"sqrt({a**2}) = ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("sqrt", str(a**2)))
@@ -217,8 +213,7 @@ def complex_multiplication(top: int) -> QuestionResult:
     real_part_ans: int = get_int("Real = ")
     imaj_part_ans: int = get_int("Imaj = ")
     while (real_part_ans, imaj_part_ans) != (a * c - b * d, a * d + b * c):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         print(f"({print_complex_number(a, b)}) * ({print_complex_number(c, d)}) = ")
         real_part_ans: int = get_int("Real = ")
         imaj_part_ans: int = get_int("Imaj = ")
@@ -259,8 +254,7 @@ def calendar() -> QuestionResult:
     start: float = time.time()
     ans: int = get_day(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
     while ans != ((a.weekday() + 1) % 7):
-        print(f"{Fore.RED}--   wrong   --\n{Fore.RESET}")
-        num_wrong += 1
+        num_wrong += wrong()
         ans = get_int(f"The day of the week of {a.strftime('%B %d, %Y')} is ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("cal", a.strftime("%B %d, %Y")))

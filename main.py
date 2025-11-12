@@ -72,7 +72,7 @@ class QuestionLog:
                     end="",
                 )
                 if result_dict["n_errors"] > 1:
-                    print("{Fore.RED}s{Fore.RESET}", end="")
+                    print(f"{Fore.RED}s{Fore.RESET}", end="")
             print()
 
 
