@@ -72,7 +72,7 @@ def print_options() -> None:
 
 
 def configure() -> tuple[str, int]:
-    operations = ALL_OPERATIONS.keys()
+    operations: list[str] = [alias for key_tuple in ALL_OPTIONS for alias in key_tuple]
     while True:
         print(
             f"{Fore.BLUE}What do you want to practice? "
@@ -84,7 +84,7 @@ def configure() -> tuple[str, int]:
             continue
         if op in operations:
             break
-        print(f"{Fore.RED} Invalid input.{Fore.RESET}")
+        print(f"{Fore.RED}Invalid input.{Fore.RESET}")
     print(f"{Fore.BLUE}How many questions?{Fore.RESET}")
     num_q: int = get_int(f"{Fore.GREEN}Enter a number: {Fore.RESET}", pos=True)
     return op, num_q
@@ -204,5 +204,4 @@ ALL_OPERATIONS: dict[str, Callable[..., QuestionResult]] = {
     "conv": conversions,
     "tip": tip,
     "default": default(),
-    "custom": configure_custom,
 }

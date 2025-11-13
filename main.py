@@ -136,6 +136,7 @@ def main_loop(
 # Special cases for the default and custom function
 # as those have different ways of defining max number
 
+type Trial = Callable[..., QuestionResult]
 
 def main() -> None:
     try:
@@ -143,7 +144,7 @@ def main() -> None:
             print_ui()
             op, num_q = configure()
             if op == "custom":
-                trial = configure_custom()
+                trial: Trial = configure_custom()
                 main_loop(trial, num_q)
                 continue
             if op == "default":
