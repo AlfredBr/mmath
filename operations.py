@@ -35,6 +35,9 @@ from utils import (
 # of the right answer to be correct
 TOLERANCE: float = 0.01
 
+# rounding num for the printed range in conv
+ROUND_NUM: int = 6
+
 
 @dataclass
 class QuestionResult:
@@ -111,8 +114,8 @@ def times_tables(top: int, num: int) -> QuestionResult:
         a: int = num
         b: int = other_num
     else:
-        a: int = other_num
-        b: int = num
+        a = other_num
+        b = num
     start: float = time.time()
     ans: int = get_int(f"{a} * {b} = ", pos=True)
     while ans != (a * b):
@@ -241,8 +244,8 @@ def complex_multiplication(top: int) -> QuestionResult:
     while (real_part_ans, imaj_part_ans) != (a * c - b * d, a * d + b * c):
         num_wrong += wrong()
         print(f"({print_complex_number(a, b)}) * ({print_complex_number(c, d)}) = ")
-        real_part_ans: int = get_int("Real = ")
-        imaj_part_ans: int = get_int("Imaj = ")
+        real_part_ans = get_int("Real = ")
+        imaj_part_ans = get_int("Imaj = ")
     q_time: float = time.time() - start
     return QuestionResult(
         num_wrong,
@@ -286,10 +289,6 @@ def calendar() -> QuestionResult:
     return QuestionResult(num_wrong, q_time, ("cal", a.strftime("%B %d, %Y")))
 
 
-# rounding num for the printed range in conv
-ROUND_NUM: int = 6
-
-
 def distance_conv(top: int) -> QuestionResult:
     if random.random() < 0.5:
         orig: str = "miles"
@@ -299,12 +298,12 @@ def distance_conv(top: int) -> QuestionResult:
         ratio: float = 1.609344
         approx: float = 1.6
     else:
-        orig: str = "kilometers"
-        orig_short: str = "km"
-        to: str = "miles"
-        to_short: str = "mi"
-        ratio: float = 0.621371
-        approx: float = 0.625
+        orig = "kilometers"
+        orig_short = "km"
+        to = "miles"
+        to_short = "mi"
+        ratio = 0.621371
+        approx = 0.625
     num_wrong: int = 0
     a = random.randint(1, top)
     start: float = time.time()
@@ -318,7 +317,7 @@ def distance_conv(top: int) -> QuestionResult:
     while not in_bounds(ans, lower_bound, upper_bound, include=True):
         num_wrong += wrong()
         print(f"{a} {orig}")
-        ans: float = get_float(f"{to.capitalize()}: ")
+        ans = get_float(f"{to.capitalize()}: ")
     q_time: float = time.time() - start
     ticket: dict[str, float | str] = {
         "Exact: ": round(ratio * a, ROUND_NUM),
@@ -340,10 +339,10 @@ def temp_conv(top: int) -> QuestionResult:
         conversion = lambda x: (x - 32) * (5 / 9)
         approx = lambda x: (x - 30) / 2
     else:
-        orig: str = "Celsius"
-        orig_short: str = "C"
-        to: str = "Fahrenheit"
-        to_short: str = "F"
+        orig = "Celsius"
+        orig_short = "C"
+        to = "Fahrenheit"
+        to_short = "F"
         conversion = lambda x: x * 1.8 + 32
         approx = lambda x: x * 2 + 30
     num_wrong: int = 0
@@ -359,13 +358,13 @@ def temp_conv(top: int) -> QuestionResult:
     while not in_bounds(ans, lower_bound, upper_bound, include=True):
         num_wrong += wrong()
         print(f"{a}° {orig}")
-        ans: float = get_float(f"{to.capitalize()}: ")
+        ans = get_float(f"{to.capitalize()}: ")
     q_time: float = time.time() - start
     ticket: dict[str, float] = {
         "Exact: ": round(conversion(a), ROUND_NUM),
         "You were off by ": round(abs(ans - correct), ROUND_NUM),
         "Approximation: ": round(approx(a), ROUND_NUM),
-        "Closest integer: ": round(closest_integer, ROUND_NUM),
+        "Closest integer: ": closest_integer,
     }
     print_ticket(ticket)
     return QuestionResult(num_wrong, q_time, (f"{orig_short} -> {to_short}", f"{a}"))
@@ -381,10 +380,10 @@ def pounds_kg(top: int) -> QuestionResult:
         conversion = lambda x: x * 0.45359237
         approx = lambda x: x * 0.45
     else:
-        orig: str = "kilograms"
-        orig_short: str = "kg"
-        to: str = "pounds"
-        to_short: str = "lb"
+        orig = "kilograms"
+        orig_short = "kg"
+        to = "pounds"
+        to_short = "lb"
         conversion = lambda x: x * 2.20462
         approx = lambda x: x * 2.2
     a = random.randint(1, top)
@@ -399,7 +398,7 @@ def pounds_kg(top: int) -> QuestionResult:
     while not in_bounds(ans, lower_bound, upper_bound, include=True):
         num_wrong += wrong()
         print(f"{a} {orig}")
-        ans: float = get_float(f"{to.capitalize()}: ")
+        ans = get_float(f"{to.capitalize()}: ")
     q_time: float = time.time() - start
     ticket: dict[str, float] = {
         "Exact: ": round(conversion(a), ROUND_NUM),
@@ -432,7 +431,7 @@ def tip(top: int) -> QuestionResult:
     ):
         num_wrong += wrong()
         print(f"{tip}% tip on ${bill:.2f} is")
-        tip_amount_ans: float = get_float("Tip:   $")
+        tip_amount_ans = get_float("Tip:   $")
     print(correct)
     total_ans: float = get_float("Total: $")
     total_amount: float = bill + tip_amount_ans
@@ -442,7 +441,7 @@ def tip(top: int) -> QuestionResult:
         num_wrong += wrong()
         print(f"{tip}% tip on ${bill:.2f} is")
         print(f"Tip:   ${tip_amount_ans}")
-        total_ans: float = get_float("Total: $")
+        total_ans = get_float("Total: $")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("%", str(tip), str(bill)))
 
@@ -464,7 +463,7 @@ def frac_add(top: int) -> QuestionResult:
         op: str = "+"
         correct_num, correct_denom = simplify_fraction(a * d + b * c, b * d)
     else:
-        op: str = "-"
+        op = "-"
         correct_num, correct_denom = simplify_fraction(a * d - b * c, b * d)
     start: float = time.time()
     print(f"{a}/{b} + {c}/{d}")
@@ -472,8 +471,8 @@ def frac_add(top: int) -> QuestionResult:
     denom_ans: int = get_int("Denominator: ")
     while num_ans != correct_num and denom_ans != correct_denom:
         num_wrong += wrong()
-        num_ans: int = get_int("Numerator: ")
-        denom_ans: int = get_int("Denominator: ")
+        num_ans = get_int("Numerator: ")
+        denom_ans = get_int("Denominator: ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, (op, f"{a}/{b}", f"{c}/{d}"))
 
@@ -491,8 +490,8 @@ def frac_mult(top: int) -> QuestionResult:
     denom_ans: int = get_int("Denominator: ")
     while num_ans != correct_num and denom_ans != correct_denom:
         num_wrong += wrong()
-        num_ans: int = get_int("Numerator: ")
-        denom_ans: int = get_int("Denominator: ")
+        num_ans = get_int("Numerator: ")
+        denom_ans = get_int("Denominator: ")
     q_time: float = time.time() - start
     return QuestionResult(num_wrong, q_time, ("*", f"{a}/{b}", f"{c}/{d}"))
 

@@ -154,26 +154,26 @@ def print_summary(
         f"{Fore.BLUE}Solved "
         f"{Fore.YELLOW}{num_q}"
         f"{Fore.BLUE} problems in "
-        f"{Fore.YELLOW}{round(end_round - start_round, ROUNDING_NUM)}"
+        f"{Fore.YELLOW}{end_round - start_round:.{ROUNDING_NUM}f}"
         f"{Fore.BLUE} seconds with "
         f"{Fore.YELLOW}{errors}"
         f"{Fore.BLUE} {'error' if errors == 1 else 'errors'}.\n{Fore.RESET}"
     )
     if len(q_times) > 1:
         stats: dict[str, float] = {
-            "Average time:": round(statistics.mean(q_times), ROUNDING_NUM),
-            "Standard deviation:": round(statistics.stdev(q_times), ROUNDING_NUM),
-            "Median time:": round(statistics.median(q_times), ROUNDING_NUM),
-            "Shortest time:": round(min(q_times), ROUNDING_NUM),
-            "Longest time:": round(max(q_times), ROUNDING_NUM),
-            "Range:": round(max(q_times) - min(q_times), ROUNDING_NUM),
+            "Average time:": statistics.mean(q_times),
+            "Standard deviation:": statistics.stdev(q_times),
+            "Median time:": statistics.median(q_times),
+            "Shortest time:": min(q_times),
+            "Longest time:": max(q_times),
+            "Range:": max(q_times) - min(q_times),
         }
         l_width = max(map(len, stats.keys())) + 1  # + 1 so there is a space after
-        num_width = max(len(str(x)) for x in stats.values())
+        num_width = max(len(f"{x:.{ROUNDING_NUM}f}") for x in stats.values())
         for desc, val in stats.items():
             print(
                 f"{Fore.BLUE}{desc:<{l_width}}"
-                f"{Fore.YELLOW}{val:<{num_width}}{Fore.BLUE} seconds{Fore.RESET}"
+                f"{Fore.YELLOW}{val:<{num_width}.{ROUNDING_NUM}f}{Fore.BLUE} seconds{Fore.RESET}"
             )
 
 

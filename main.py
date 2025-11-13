@@ -45,7 +45,7 @@ class QuestionLog:
         number_data = [item[0] for item in sorted_questions]
 
         q_times = [item[1]["time"] for item in sorted_questions]
-        q_width: int = max(len(str(round(x, ROUNDING_NUM))) for x in q_times)
+        q_width: int = max(len(f"{x:.{ROUNDING_NUM}f}") for x in q_times)
 
         l_width: int = 0
         r_width: int = 0
@@ -63,7 +63,7 @@ class QuestionLog:
                 f"{Fore.BLUE}{a:>{l_width}}"
                 f"{Fore.YELLOW} {op:^{op_width}} "
                 f"{Fore.BLUE}{b:<{r_width}}"
-                f"{Fore.GREEN} | {round(result_dict['time'], ROUNDING_NUM):<{q_width}}"
+                f"{Fore.GREEN} | {result_dict['time']:<{q_width}.{ROUNDING_NUM}f}"
                 f" seconds"
                 f" | {Fore.RESET}",
                 end="",
